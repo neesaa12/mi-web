@@ -11,6 +11,10 @@
    ========================================================= */
 
 :root {
+
+  --fuente-cuerpo: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --fuente-titulo: "Space Grotesk", "Manrope", system-ui, sans-serif;
+
   --morado: #a78bfa;
   --morado-oscuro: #c4b5fd;
   --azul: #60a5fa;
@@ -69,14 +73,39 @@ html[data-tema="claro"] {
 *::before,
 *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  scrollbar-color: var(--morado) var(--superficie); /* Firefox */
+  scrollbar-width: thin;
+}
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family: var(--fuente-cuerpo);
+  font-size: 1.0625rem;          /* 17px: un pelín más grande y cómodo */
   color: var(--texto);
-  background: var(--fondo); /* FONDO SÓLIDO */
-  line-height: 1.65;
+  background: var(--fondo);
+  line-height: 1.7;
+  letter-spacing: 0.01em;        /* respiro sutil entre letras */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--morado);
+  color: var(--blanco);
+}
+
+::-webkit-scrollbar { width: 12px; }
+::-webkit-scrollbar-track { background: var(--superficie); }
+::-webkit-scrollbar-thumb {
+  background: var(--grad-marca);
+  border-radius: 999px;
+  border: 3px solid var(--superficie);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(var(--morado-oscuro), var(--azul-oscuro));
 }
 
 img { max-width: 100%; display: block; }
@@ -345,6 +374,7 @@ a:focus-visible, button:focus-visible {
 .ficha-datos dt { color: var(--texto-suave); font-weight: 600; }
 .ficha-datos dd { margin: 0; color: var(--texto); font-weight: 700; }
 
+.hero h1, .seccion h2, .marca { font-family: var(--fuente-titulo); }
 
 /* =========================================================
    7. SECCIONES Y TÍTULOS
@@ -498,6 +528,61 @@ a:focus-visible, button:focus-visible {
 }
 .contacto a:hover { background: rgba(255, 255, 255, 0.22); color: #fff; transform: translateY(-2px); }
 .anio { margin-top: 1rem; font-size: 0.9rem; color: #a5b4fc; }
+
+/* =========================================================
+   12· BOTÓN DE EMAIL (mismo estilo que los enlaces)
+   ========================================================= */
+
+.email-boton {
+  display: inline-block;
+  padding: 0.7rem 1.2rem;
+  border-radius: var(--radio-boton);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+.email-boton:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: var(--morado);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* =========================================================
+   13. TOAST (aviso flotante con el correo)
+   ========================================================= */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 2rem;
+  transform: translateX(-50%) translateY(20px);
+  max-width: min(92vw, 520px);
+  padding: 0.9rem 1.4rem;
+  border-radius: var(--radio-boton);
+  background: var(--superficie-2);
+  border: 1px solid var(--morado);
+  color: var(--texto);
+  font-weight: 600;
+  text-align: center;
+  box-shadow: var(--sombra-media);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s;
+  z-index: 10000;
+}
+
+/* Estado visible (lo añade el JS) */
+.toast.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
 
 
 /* =========================================================

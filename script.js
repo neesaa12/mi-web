@@ -238,3 +238,61 @@ document.querySelectorAll('a[href^="#"]').forEach((enlace) => {
     });
   }
 });
+
+
+
+/* =========================================================
+   10. ✔ NUEVO · BOTÓN DE EMAIL
+   Al pulsar "Email" se muestra el correo en el toast flotante
+   y se intenta copiar al portapapeles.
+   ========================================================= */
+
+const CORREO = "vanetayg@alu.edu.gva.es";
+const emailBoton = document.getElementById("email-boton");
+const toast = document.getElementById("toast");
+let temporizadorToast;
+
+// Función para copiar texto (con copia de seguridad para file://)
+async function copiarTexto(texto) {
+  try {
+    await navigator.clipboard.writeText(texto); // requiere contexto seguro
+    return true;
+  } catch (error) {
+    // Alternativa: textarea oculto + execCommand (funciona en file://)
+    const area = document.createElement("textarea");
+    area.value = texto;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    let ok = false;
+    try { ok = document.execCommand("copy"); } catch (e) { ok = false; }
+    document.body.removeChild(area);
+    return ok;
+  }
+}
+
+// Muestra el aviso flotante durante unos segundos
+function mostrarToast(mensaje) {
+  if (!toast) return;
+  toast.textContent = mensaje;
+  toast.classList.add("visible");
+
+  // Reinicia el temporizador si se pulsa varias veces seguidas
+  clearTimeout(temporizadorToast);
+  temporizadorToast = setTimeout(() => {
+    toast.classList.remove("visible");
+  }, 4000);
+}
+
+// Evento del botón: muestra el correo y lo copia
+if (emailBoton) {
+  emailBoton.addEventListener("click", async () => {
+    const copiado = await copiarTexto(CORREO);
+    mostrarToast(
+      copiado
+        ? `✉️ ${CORREO} — copiado al portapapeles`
+        : `✉️ ${CORREO}`
+    );
+  });
+}

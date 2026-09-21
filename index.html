@@ -18,7 +18,10 @@
       document.documentElement.setAttribute("data-tema", tema);
     })();
   </script>
-
+  <!-- Tipografías (Google Fonts, no es framework) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <script src="script.js" defer></script>
 </head>
@@ -194,7 +197,7 @@
     <p>Si quieres ponerte en contacto conmigo, puedes escribirme o seguirme en mis redes.</p>
 
     <ul class="contacto">
-      <li><a href="mailto:tuemail@ejemplo.com">Email</a></li>
+      <li><button type="button" class="email-boton" id="email-boton">✉️ Email</button></li>
       <li><a href="https://github.com/tuusuario" target="_blank" rel="noopener noreferrer">GitHub</a></li>
       <li><a href="https://www.linkedin.com/in/tuusuario" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
     </ul>
@@ -205,5 +208,7 @@
   <!-- Botón flotante para volver arriba -->
   <button type="button" class="subir" id="subir" aria-label="Volver arriba">↑</button>
 
+  <!-- Aviso flotante: muestra el correo al pulsar Email -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
