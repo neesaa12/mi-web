@@ -13,7 +13,7 @@
     (function () {
       var tema = localStorage.getItem("tema");
       if (tema !== "oscuro" && tema !== "claro") {
-        tema = "oscuro"; // modo oscuro por defecto
+        tema = "oscuro";
       }
       document.documentElement.setAttribute("data-tema", tema);
     })();
@@ -24,34 +24,29 @@
 </head>
 <body>
 
-  <!-- =====================================================
-       FONDO ANIMADO INTERACTIVO (fijo, detrás de todo)
-       - capa-grad:        gradiente base que respira
-       - capa-cuadricula:  rejilla que se desliza
-       - orbes:            manchas de color con parallax
-       - capa-particulas:  estrellas generadas con JS
-       - capa-spot:        ANILLO FINO de luz que sigue al ratón
-       ===================================================== -->
-  <div class="fondo" aria-hidden="true">
-    <div class="capa-grad"></div>
-    <div class="capa-cuadricula"></div>
-    <div class="orbes">
-      <div class="orbe orbe-1"></div>
-      <div class="orbe orbe-2"></div>
-      <div class="orbe orbe-3"></div>
-    </div>
-    <div class="capa-particulas" id="particulas"></div>
-    <div class="capa-spot"></div>
-  </div>
+  <!-- Ráfaga de luz que sigue al cursor (canvas, fondo sólido detrás) -->
+  <canvas id="estela" class="estela" aria-hidden="true"></canvas>
 
-  <!-- Cabecera principal -->
-  <header class="hero" id="inicio">
-    <!-- Menú de navegación -->
-    <nav class="nav" aria-label="Navegación principal">
-      <a href="#sobre-mi">Sobre mí</a>
-      <a href="#hecho">Lo que he hecho</a>
-      <a href="#gustos">Me gusta</a>
-      <a href="#contacto">Contacto</a>
+  <!-- =====================================================
+       CABECERA: barra de navegación fija + hero reestructurado
+       ===================================================== -->
+  <header class="cabecera">
+
+    <!-- Barra superior fija (marca + menú + botón de tema) -->
+    <div class="barra">
+      <!-- Marca / identidad -->
+      <a class="marca" href="#inicio" aria-label="Inicio">
+        <span class="marca-logo">VP</span>
+        <span class="marca-texto">Vanesa Aygarova</span>
+      </a>
+
+      <!-- Menú de navegación -->
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="#sobre-mi">Sobre mí</a>
+        <a href="#hecho">Lo que he hecho</a>
+        <a href="#gustos">Me gusta</a>
+        <a href="#contacto">Contacto</a>
+      </nav>
 
       <!-- Botón de modo oscuro/claro -->
       <button
@@ -62,16 +57,33 @@
       >
         ☀️ Modo claro
       </button>
-    </nav>
+    </div>
 
-    <!-- Nombre, etiqueta y frase principal -->
-    <div class="hero-contenido">
-      <span class="etiqueta">1º DAM · IES Simarro</span>
-      <h1 id="titulo">Vanesa Petrova Aygarova</h1>
-      <p class="frase">
-        Estudiante de 1º DAM · Me interesa descubrir el trabajo que hay detrás de las aplicaciones y páginas web.
-      </p>
-      <a class="boton" href="#contacto">Hablemos</a>
+    <!-- Hero: texto a la izquierda + ficha-resumen a la derecha -->
+    <div class="hero">
+      <div class="hero-texto">
+        <span class="etiqueta">1º DAM · IES Simarro</span>
+        <h1 id="titulo">Vanesa Petrova Aygarova</h1>
+        <p class="frase">
+          Estudiante de 1º DAM. Me interesa descubrir el trabajo que hay detrás
+          de las aplicaciones y páginas web.
+        </p>
+        <div class="hero-acciones">
+          <a class="boton" href="#contacto">Hablemos</a>
+          <a class="boton boton-secundario" href="#sobre-mi">Sobre mí</a>
+        </div>
+      </div>
+
+      <!-- Ficha-resumen (claridad visual de un vistazo) -->
+      <aside class="hero-ficha" aria-label="Resumen">
+        <div class="ficha-avatar">VP</div>
+        <p class="ficha-nombre">Vanesa Petrova Aygarova</p>
+        <dl class="ficha-datos">
+          <div><dt>Ciclo</dt><dd>1º DAM</dd></div>
+          <div><dt>Centro</dt><dd>IES Simarro</dd></div>
+          <div><dt>Objetivo</dt><dd>Programadora</dd></div>
+        </dl>
+      </aside>
     </div>
   </header>
 
@@ -80,7 +92,6 @@
     <!-- Sección Sobre mí -->
     <section class="seccion" id="sobre-mi">
       <h2>Sobre mí</h2>
-
       <p>
         Soy Vanesa Petrova Aygarova, estudiante del ciclo de <strong>1º DAM</strong> en el <strong>IES Simarro</strong>.
         Me gusta la música, ver series y películas, la informática y la montaña. También disfruto viajando y aprendiendo cosas nuevas.
@@ -118,7 +129,6 @@
           <span class="contador-numero" id="contador-numero">0</span>
           cosas destacadas en esta web.
         </p>
-
         <p class="contador-detalle">
           Contando las tarjetas de la sección “Lo que he hecho”.
         </p>
@@ -134,7 +144,6 @@
             </p>
           </article>
         </li>
-
         <li>
           <article>
             <h3>Viajar mucho</h3>
@@ -143,7 +152,6 @@
             </p>
           </article>
         </li>
-
         <li>
           <article>
             <h3>1º DAM</h3>
@@ -162,31 +170,19 @@
       <div class="gustos">
         <article class="tarjeta">
           <h3>Música</h3>
-          <p>
-            La música forma parte de mi día a día y me ayuda a concentrarme, relajarme y disfrutar.
-          </p>
+          <p>La música forma parte de mi día a día y me ayuda a concentrarme, relajarme y disfrutar.</p>
         </article>
-
         <article class="tarjeta">
           <h3>Series y películas</h3>
-          <p>
-            Me gusta ver series y películas para desconectar, aprender y disfrutar de buenas historias.
-          </p>
+          <p>Me gusta ver series y películas para desconectar, aprender y disfrutar de buenas historias.</p>
         </article>
-
         <article class="tarjeta">
           <h3>Informática</h3>
-          <p>
-            La informática me llama la atención, especialmente el trabajo que hay detrás de aplicaciones
-            y páginas web.
-          </p>
+          <p>La informática me llama la atención, especialmente el trabajo que hay detrás de aplicaciones y páginas web.</p>
         </article>
-
         <article class="tarjeta">
           <h3>Montaña</h3>
-          <p>
-            Disfruto de la montaña, el aire libre y las experiencias relacionadas con la naturaleza.
-          </p>
+          <p>Disfruto de la montaña, el aire libre y las experiencias relacionadas con la naturaleza.</p>
         </article>
       </div>
     </section>
@@ -195,31 +191,18 @@
   <!-- Pie de página -->
   <footer class="pie" id="contacto">
     <h2>Contacto</h2>
-    <p>
-      Si quieres ponerte en contacto conmigo, puedes escribirme o seguirme en mis redes.
-    </p>
+    <p>Si quieres ponerte en contacto conmigo, puedes escribirme o seguirme en mis redes.</p>
 
-    <!-- Enlaces de contacto -->
     <ul class="contacto">
       <li><a href="mailto:tuemail@ejemplo.com">Email</a></li>
-      <li>
-        <a href="https://github.com/tuusuario" target="_blank" rel="noopener noreferrer">
-          GitHub
-        </a>
-      </li>
-      <li>
-        <a href="https://www.linkedin.com/in/tuusuario" target="_blank" rel="noopener noreferrer">
-          LinkedIn
-        </a>
-      </li>
+      <li><a href="https://github.com/tuusuario" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      <li><a href="https://www.linkedin.com/in/tuusuario" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
     </ul>
 
-    <p class="anio">
-      © <span id="anio"></span> Vanesa Petrova Aygarova
-    </p>
+    <p class="anio">© <span id="anio"></span> Vanesa Petrova Aygarova</p>
   </footer>
 
-  <!-- Botón flotante para volver arriba (aparece al hacer scroll) -->
+  <!-- Botón flotante para volver arriba -->
   <button type="button" class="subir" id="subir" aria-label="Volver arriba">↑</button>
 
 </body>

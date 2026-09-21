@@ -8,19 +8,14 @@ const botonTema = document.getElementById("modo-oscuro");
 
 function aplicarTema(tema, guardar = true) {
   document.documentElement.setAttribute("data-tema", tema);
-
   if (botonTema) {
     const esOscuro = tema === "oscuro";
     botonTema.setAttribute("aria-pressed", String(esOscuro));
     botonTema.textContent = esOscuro ? "☀️ Modo claro" : "🌙 Modo oscuro";
   }
-
   if (guardar) {
-    try {
-      localStorage.setItem("tema", tema);
-    } catch (error) {
-      console.warn("No se pudo guardar el tema:", error);
-    }
+    try { localStorage.setItem("tema", tema); }
+    catch (error) { console.warn("No se pudo guardar el tema:", error); }
   }
 }
 
@@ -28,7 +23,6 @@ const temaInicial =
   document.documentElement.getAttribute("data-tema") ||
   localStorage.getItem("tema") ||
   "oscuro";
-
 aplicarTema(temaInicial, false);
 
 if (botonTema) {
@@ -48,72 +42,71 @@ if (anio) anio.textContent = new Date().getFullYear();
 
 
 /* =========================================================
-   3. FONDO INTERACTIVO · glow que sigue al ratón + parallax
+   3. RÁFAGA DE LUZ DEL CURSOR (estela en canvas)
    ========================================================= */
 
 const reduceMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const raiz = document.documentElement;
-const capaParticulas = document.getElementById("particulas");
-const contenedorOrbes = document.querySelector(".orbes");
+const lienzo = document.getElementById("estela");
 
-// Genera las estrellas (solo si no hay "menos movimiento")
-if (capaParticulas && !reduceMovimiento) {
-  const total = 38;
-  for (let i = 0; i < total; i++) {
-    const p = document.createElement("span");
-    p.className = "particula";
-    const tam = Math.random() * 3 + 1;
-    p.style.width = tam + "px";
-    p.style.height = tam + "px";
-    p.style.left = Math.random() * 100 + "%";
-    p.style.top = Math.random() * 100 + "%";
-    const durDeriva = Math.random() * 8 + 6;
-    const durParpadeo = Math.random() * 4 + 2;
-    p.style.animationDuration = durDeriva + "s, " + durParpadeo + "s";
-    p.style.animationDelay = (-Math.random() * 10) + "s, " + (-Math.random() * 5) + "s";
-    capaParticulas.appendChild(p);
+if (lienzo && !reduceMovimiento) {
+  const ctx = lienzo.getContext("2d");
+  const puntos = []; // historial de posiciones del cursor
+  const largoEstela = 26;
+
+  // Colores según tema (los lee de las variables CSS)
+  const colorTema = () =>
+    document.documentElement.getAttribute("data-tema") === "claro"
+      ? { r: 139, g: 92, b: 246 }
+      : { r: 196, g: 181, b: 253 };
+
+  function ajustarLienzo() {
+    lienzo.width = window.innerWidth;
+    lienzo.height = window.innerHeight;
   }
-}
-
-// Movimiento del fondo con el cursor: glow suave (lerp) + parallax
-if (!reduceMovimiento) {
-  let objetivoX = window.innerWidth / 2;   // posición real del ratón
-  let objetivoY = window.innerHeight / 2;
-  let actualX = objetivoX;                 // posición suavizada del glow
-  let actualY = objetivoY;
-  let parX = 0, parY = 0;                  // parallax objetivo (-0.5..0.5)
-  let parCX = 0, parCY = 0;                // parallax suavizado
+  ajustarLienzo();
+  window.addEventListener("resize", ajustarLienzo);
 
   window.addEventListener("pointermove", (e) => {
-    objetivoX = e.clientX;
-    objetivoY = e.clientY;
-    parX = e.clientX / window.innerWidth - 0.5;
-    parY = e.clientY / window.innerHeight - 0.5;
+    puntos.push({ x: e.clientX, y: e.clientY });
+    if (puntos.length > largoEstela) puntos.shift();
   }, { passive: true });
 
-  function animarFondo() {
-    // Interpolación (lerp): el glow persigue al cursor con suavidad
-    actualX += (objetivoX - actualX) * 0.08;
-    actualY += (objetivoY - actualY) * 0.08;
-    raiz.style.setProperty("--mx", actualX + "px");
-    raiz.style.setProperty("--my", actualY + "px");
+  function dibujar() {
+    ctx.clearRect(0, 0, lienzo.width, lienzo.height);
+    const c = colorTema();
+    const modoClaro = document.documentElement.getAttribute("data-tema") === "claro";
+    ctx.globalCompositeOperation = modoClaro ? "source-over" : "lighter";
 
-    // Parallax: orbes y partículas se desplazan según el cursor
-    parCX += (parX - parCX) * 0.05;
-    parCY += (parY - parCY) * 0.05;
-    if (contenedorOrbes) {
-      contenedorOrbes.style.transform =
-        `translate(${parCX * 45}px, ${parCY * 45}px)`;
-    }
-    if (capaParticulas) {
-      capaParticulas.style.transform =
-        `translate(${parCX * -22}px, ${parCY * -22}px)`;
+    for (let i = 0; i < puntos.length; i++) {
+      const p = puntos[i];
+      const t = i / puntos.length; // 0 cola -> 1 cabeza
+      const radio = 2 + t * 16;
+      const alpha = t * 0.5;
+      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radio);
+      g.addColorStop(0, `rgba(${c.r},${c.g},${c.b},${alpha})`);
+      g.addColorStop(1, `rgba(${c.r},${c.g},${c.b},0)`);
+      ctx.fillStyle = g;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, radio, 0, Math.PI * 2);
+      ctx.fill();
     }
 
-    requestAnimationFrame(animarFondo);
+    // Cabeza más nítida
+    if (puntos.length) {
+      const cab = puntos[puntos.length - 1];
+      ctx.globalCompositeOperation = "source-over";
+      ctx.fillStyle = modoClaro ? "rgba(91,33,182,0.9)" : "rgba(240,235,255,0.95)";
+      ctx.beginPath();
+      ctx.arc(cab.x, cab.y, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // La estela se va apagando sola (fade)
+    if (puntos.length) puntos.shift();
+
+    requestAnimationFrame(dibujar);
   }
-
-  requestAnimationFrame(animarFondo);
+  requestAnimationFrame(dibujar);
 }
 
 
@@ -122,7 +115,6 @@ if (!reduceMovimiento) {
    ========================================================= */
 
 const secciones = document.querySelectorAll(".seccion");
-
 const observador = new IntersectionObserver(
   (entradas) => {
     entradas.forEach((entrada) => {
@@ -134,11 +126,7 @@ const observador = new IntersectionObserver(
   },
   { threshold: 0.15 }
 );
-
-secciones.forEach((seccion) => {
-  seccion.classList.add("oculto");
-  observador.observe(seccion);
-});
+secciones.forEach((s) => { s.classList.add("oculto"); observador.observe(s); });
 
 
 /* =========================================================
@@ -146,7 +134,6 @@ secciones.forEach((seccion) => {
    ========================================================= */
 
 const enlacesNav = document.querySelectorAll('.nav a[href^="#"]');
-
 const observadorNav = new IntersectionObserver(
   (entradas) => {
     entradas.forEach((entrada) => {
@@ -160,10 +147,7 @@ const observadorNav = new IntersectionObserver(
   },
   { rootMargin: "-45% 0px -50% 0px" }
 );
-
-document.querySelectorAll("main section[id], footer[id]").forEach((seccion) => {
-  observadorNav.observe(seccion);
-});
+document.querySelectorAll("main section[id], footer[id]").forEach((s) => observadorNav.observe(s));
 
 
 /* =========================================================
@@ -171,62 +155,35 @@ document.querySelectorAll("main section[id], footer[id]").forEach((seccion) => {
    ========================================================= */
 
 const titulo = document.getElementById("titulo");
-
 if (titulo) {
-  const texto = titulo.textContent.trim();
-  const palabras = texto.split(" ");
+  const palabras = titulo.textContent.trim().split(" ");
   titulo.textContent = "";
-
   palabras.forEach((palabra, i) => {
     const span = document.createElement("span");
     span.className = "palabra";
     span.textContent = palabra;
-    span.style.animationDelay = `${0.3 + i * 0.12}s`;
+    span.style.animationDelay = `${0.15 + i * 0.12}s`;
     titulo.appendChild(span);
-    if (i < palabras.length - 1) {
-      titulo.appendChild(document.createTextNode(" "));
-    }
+    if (i < palabras.length - 1) titulo.appendChild(document.createTextNode(" "));
   });
 }
 
 
 /* =========================================================
-   7. SPOTLIGHT: brillo que sigue al cursor en las tarjetas
-   ========================================================= */
-
-const tarjetasSpot = document.querySelectorAll(".tarjeta-spot");
-
-tarjetasSpot.forEach((tarjeta) => {
-  tarjeta.addEventListener("pointermove", (evento) => {
-    const caja = tarjeta.getBoundingClientRect();
-    const x = evento.clientX - caja.left;
-    const y = evento.clientY - caja.top;
-    tarjeta.style.setProperty("--mx", `${x}px`);
-    tarjeta.style.setProperty("--my", `${y}px`);
-  });
-});
-
-
-/* =========================================================
-   8. BOTÓN "VOLVER ARRIBA" (aparece al hacer scroll)
+   7. BOTÓN "VOLVER ARRIBA"
    ========================================================= */
 
 const botonSubir = document.getElementById("subir");
-
 if (botonSubir) {
-  const alScroll = () => {
-    botonSubir.classList.toggle("visible", window.scrollY > 400);
-  };
+  const alScroll = () => botonSubir.classList.toggle("visible", window.scrollY > 400);
   window.addEventListener("scroll", alScroll, { passive: true });
   alScroll();
-  botonSubir.addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  });
+  botonSubir.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
 }
 
 
 /* =========================================================
-   9. CONTADOR DESPLEGABLE DE "COSAS QUE HE HECHO"
+   8. CONTADOR DESPLEGABLE DE "COSAS QUE HE HECHO"
    ========================================================= */
 
 const botonContador = document.getElementById("boton-contador");
@@ -263,3 +220,21 @@ if (botonContador && panelContador && contadorNumero) {
     }
   });
 }
+
+
+/* =========================================================
+   9. ENLACES DE ANCLA CON SCROLL SUAVE
+   Evita el error "file: URLs are treated as unique origins"
+   al abrir el HTML con doble clic (file://): no navegamos al
+   #..., solo hacemos scroll a la sección (respeta el sticky).
+   ========================================================= */
+
+document.querySelectorAll('a[href^="#"]').forEach((enlace) => {
+  const destino = document.querySelector(enlace.getAttribute("href"));
+  if (destino) {
+    enlace.addEventListener("click", (e) => {
+      e.preventDefault();
+      destino.scrollIntoView({ behavior: "smooth" });
+    });
+  }
+});
