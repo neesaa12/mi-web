@@ -437,16 +437,80 @@ a:focus-visible, button:focus-visible {
    ========================================================= */
 
 .gustos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+
 .tarjeta {
+  position: relative;
+  overflow: hidden;
   background: var(--superficie);
   border: 1px solid var(--borde);
   border-radius: var(--radio-suave);
   padding: 1.75rem;
   box-shadow: var(--sombra-suave);
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
 }
-.tarjeta:hover { transform: translateY(-4px); border-color: var(--azul); box-shadow: var(--sombra-media); }
-.tarjeta h3 { margin: 0 0 0.6rem; color: var(--morado-oscuro); font-size: 1.25rem; }
+
+
+/* Más grande + cambio de color + sombra de marca */
+.tarjeta:hover {
+  transform: translateY(-10px) scale(1.1);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(59, 130, 246, 0.14)), var(--superficie);
+  border-color: var(--morado);
+  box-shadow: 0 22px 50px rgba(139, 92, 246, 0.35);
+}
+
+/* Barrido de luz (shine) al pasar el ratón */
+.tarjeta::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+.tarjeta:hover::before { left: 125%; }
+
+/* Emoji decorativo (sale del atributo data-emoji) */
+.tarjeta::after {
+  content: attr(data-emoji);
+  position: absolute;
+  top: 0.9rem;
+  right: 1rem;
+  font-size: 1.6rem;
+  opacity: 0;
+  transform: scale(0.4) rotate(-25deg);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.tarjeta:hover::after {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+/* Título: otro formato al pasar el ratón (mayúsculas + espaciado) */
+.tarjeta h3 {
+  margin: 0 0 0.6rem;
+  color: var(--morado-oscuro);
+  font-size: 1.25rem;
+  font-family: var(--fuente-titulo);
+  transition: color 0.3s ease, letter-spacing 0.3s ease;
+}
+.tarjeta:hover h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 700;
+  color: var(--azul-oscuro);
+}
+
 .tarjeta p { margin: 0; color: var(--texto-suave); }
 
 /* Revelado escalonado */
