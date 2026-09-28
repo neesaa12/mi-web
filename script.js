@@ -296,3 +296,81 @@ if (emailBoton) {
     );
   });
 }
+
+
+/* =========================================================
+   11. · FORMULARIO QUE ABRE ISSUE/PR ETIQUETADO
+   ========================================================= */
+
+// ⚠ Cambia esto por tu usuario y el nombre real de tu repositorio:
+const REPO = "neesaa12/mi-web";
+
+const formBoton = document.getElementById("form-boton");
+const modalFondo = document.getElementById("modal-fondo");
+const modalCerrar = document.getElementById("modal-cerrar");
+const formGithub = document.getElementById("form-github");
+
+// Abrir modal (con animación y foco en el primer campo)
+function abrirModal() {
+  if (!modalFondo) return;
+  modalFondo.hidden = false;
+  requestAnimationFrame(() => modalFondo.classList.add("abierto"));
+  const primerCampo = document.getElementById("campo-titulo");
+  if (primerCampo) primerCampo.focus();
+}
+
+// Cerrar modal (espera a la animación antes de ocultar)
+function cerrarModal() {
+  if (!modalFondo) return;
+  modalFondo.classList.remove("abierto");
+  setTimeout(() => {
+    modalFondo.hidden = true;
+    if (formBoton) formBoton.focus(); // devolvemos el foco al botón
+  }, 300);
+}
+
+if (formBoton) formBoton.addEventListener("click", abrirModal);
+if (modalCerrar) modalCerrar.addEventListener("click", cerrarModal);
+
+// Cerrar al pulsar fuera de la tarjeta
+if (modalFondo) {
+  modalFondo.addEventListener("click", (e) => {
+    if (e.target === modalFondo) cerrarModal();
+  });
+}
+
+// Cerrar con la tecla Escape
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && modalFondo && !modalFondo.hidden) cerrarModal();
+});
+
+// Al cambiar Issue/PR, pintamos la píldora activa
+if (formGithub) {
+  formGithub.addEventListener("change", () => {
+    const pills = formGithub.querySelectorAll(".pills label");
+    pills.forEach((pill) => {
+      const input = pill.querySelector("input");
+      pill.classList.toggle("activa", input && input.checked);
+    });
+  });
+
+  // Al enviar: construimos la URL de GitHub y la abrimos en otra pestaña
+  formGithub.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const datos = new FormData(formGithub);
+    const tipo = datos.get("tipo");
+    const titulo = encodeURIComponent((datos.get("titulo") || "").trim());
+    const cuerpo = encodeURIComponent((datos.get("descripcion") || "").trim());
+    const etiqueta = encodeURIComponent(datos.get("etiqueta") || "");
+
+    const url = tipo === "pr"
+      // Pantalla de crear Pull Request, con título/cuerpo/etiqueta rellenos
+      ? `https://github.com/${REPO}/compare?expand=1&title=${titulo}&body=${cuerpo}&labels=${etiqueta}`
+      // Pantalla de crear Issue, con título/cuerpo/etiqueta rellenos
+      : `https://github.com/${REPO}/issues/new?title=${titulo}&body=${cuerpo}&labels=${etiqueta}`;
+
+    window.open(url, "_blank", "noopener");
+    cerrarModal();
+  });
+}

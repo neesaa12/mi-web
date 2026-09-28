@@ -585,12 +585,33 @@ a:focus-visible, button:focus-visible {
 .pie h2 { margin: 0 0 1rem; color: #f5f3ff; font-size: 2rem; }
 .pie p { max-width: 700px; margin: 0 auto; color: #c7d2fe; }
 .contacto { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.9rem; margin: 1.75rem 0 1.5rem; }
-.contacto a {
-  display: inline-block; padding: 0.7rem 1.2rem; border-radius: var(--radio-boton);
-  color: #fff; background: rgba(255, 255, 255, 0.10); border: 1px solid rgba(255, 255, 255, 0.20);
-  font-weight: 600; transition: background-color 0.25s ease, transform 0.25s ease;
+/* Enlaces y botones del footer: Email y Formulario idénticos.
+   appearance:none quita el fondo blanco por defecto del <button>. */
+.contacto a,
+.contacto .email-boton,
+.contacto .form-boton {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-block;
+  padding: 0.7rem 1.2rem;
+  border-radius: var(--radio-boton);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  font-family: var(--fuente-cuerpo);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
 }
-.contacto a:hover { background: rgba(255, 255, 255, 0.22); color: #fff; transform: translateY(-2px); }
+.contacto a:hover,
+.contacto .email-boton:hover,
+.contacto .form-boton:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: var(--morado);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
 .anio { margin-top: 1rem; font-size: 0.9rem; color: #a5b4fc; }
 
 /* =========================================================
@@ -720,3 +741,134 @@ body, .seccion, .lista article, .tarjeta, .panel-contador, .boton-contador, .bar
   .seccion h2::after { transform: scaleX(1); }
   .estela { display: none; }
 }
+
+/* =========================================================
+   17. MODAL DEL FORMULARIO DE GITHUB
+   ========================================================= */
+
+/* Fondo oscuro con desenfoque */
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(5, 2, 15, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.modal-fondo.abierto { opacity: 1; }
+.modal-fondo[hidden] { display: none; }
+
+/* Tarjeta del modal */
+.modal {
+  width: min(520px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-suave);
+  padding: 2rem;
+  box-shadow: var(--sombra-media);
+  transform: translateY(16px) scale(0.97);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.modal-fondo.abierto .modal { transform: translateY(0) scale(1); }
+
+/* Botón cerrar (×) */
+.modal-cerrar {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--borde);
+  border-radius: 50%;
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+.modal-cerrar:hover { border-color: var(--morado); transform: rotate(90deg); }
+
+.modal h3 {
+  margin: 0 0 0.4rem;
+  font-family: var(--fuente-titulo);
+  color: var(--morado-oscuro);
+  font-size: 1.4rem;
+}
+.modal-texto { margin: 0 0 1.4rem; font-size: 0.95rem; color: var(--texto-suave); }
+
+/* Campos del formulario */
+.campo { margin-bottom: 1.1rem; }
+.campo label,
+.campo-etiqueta {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  color: var(--texto);
+}
+
+.campo input[type="text"],
+.campo textarea,
+.campo select {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.campo textarea { resize: vertical; }
+.campo input:focus,
+.campo textarea:focus,
+.campo select:focus {
+  outline: none;
+  border-color: var(--morado);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+}
+
+/* Selector Issue / Pull Request (píldoras) */
+.pills { display: flex; gap: 0.5rem; }
+.pills label {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+  padding: 0.6rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-boton);
+  color: var(--texto-suave);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+.pills input { position: absolute; opacity: 0; pointer-events: none; }
+.pills label.activa {
+  background: var(--grad-marca);
+  border-color: transparent;
+  color: #0d0522;
+}
+
+/* Botón de enviar a ancho completo */
+.modal-enviar {
+  width: 100%;
+  margin-top: 0.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+}
+
+/* Ajustes en modo claro */
+html[data-tema="claro"] .modal-fondo { background: rgba(30, 20, 60, 0.45); }
+html[data-tema="claro"] .modal-enviar,
+html[data-tema="claro"] .pills label.activa { color: #ffffff; }

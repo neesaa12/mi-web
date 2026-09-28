@@ -149,7 +149,7 @@
         </li>
         <li>
           <article>
-            <h3>Viajar mucho</h3>
+            <h3>Viajar</h3>
             <p>
               Me gusta viajar, conocer nuevos lugares y descubrir culturas, personas y experiencias diferentes.
             </p>
@@ -194,12 +194,12 @@
   <!-- Pie de página -->
   <footer class="pie" id="contacto">
     <h2>Contacto</h2>
-    <p>Si quieres ponerte en contacto conmigo, puedes escribirme o seguirme en mis redes.</p>
+    <p>Si quieres ponerte en contacto conmigo, puedes escribirme.</p>
 
     <ul class="contacto">
-      <li><button type="button" class="email-boton" id="email-boton">✉️ Email</button></li>
+      <li><button type="button" class="email-boton" id="email-boton">Email</button></li>
       <li><a href="https://github.com/neesaa12" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-      <li><a href="https://www.linkedin.com/in/tuusuario" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+      <li><button type="button" class="form-boton" id="form-boton">Formulario</button></li>
     </ul>
 
     <p class="anio">© <span id="anio"></span> Vanesa Petrova Aygarova</p>
@@ -209,6 +209,41 @@
   <button type="button" class="subir" id="subir" aria-label="Volver arriba">↑</button>
 
   <!-- Aviso flotante: muestra el correo al pulsar Email -->
+   <!-- Formulario que abre un issue/PR etiquetado en GitHub -->
+<div class="modal-fondo" id="modal-fondo" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+    <button type="button" class="modal-cerrar" id="modal-cerrar" aria-label="Cerrar formulario">×</button>
+    <h3 id="modal-titulo">Nuevo en GitHub</h3>
+    <p class="modal-texto">Rellena y se abrirá un issue o PR etiquetado en mi repositorio.</p>
+    <form id="form-github">
+      <div class="campo">
+        <span class="campo-etiqueta">Tipo</span>
+        <div class="pills">
+          <label class="activa"><input type="radio" name="tipo" value="issue" checked /> Issue</label>
+          <label><input type="radio" name="tipo" value="pr" /> Pull Request</label>
+        </div>
+      </div>
+      <div class="campo">
+        <label for="campo-titulo">Título *</label>
+        <input id="campo-titulo" name="titulo" type="text" required placeholder="Ej: Mejorar contraste del hero" />
+      </div>
+      <div class="campo">
+        <label for="campo-descripcion">Descripción</label>
+        <textarea id="campo-descripcion" name="descripcion" rows="4" placeholder="Detalla qué quieres cambiar..."></textarea>
+      </div>
+      <div class="campo">
+        <label for="campo-etiqueta">Etiqueta *</label>
+        <select id="campo-etiqueta" name="etiqueta" required>
+          <option value="bug">Bug</option>
+          <option value="mejora">Mejora</option>
+          <option value="diseño">Diseño</option>
+          <option value="contenido">Contenido</option>
+        </select>
+      </div>
+      <button type="submit" class="boton modal-enviar">Abrir en GitHub ↗</button>
+    </form>
+  </div>
+</div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
