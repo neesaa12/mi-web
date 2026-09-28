@@ -134,12 +134,11 @@ a:focus-visible, button:focus-visible {
    ========================================================= */
 
 .estela {
-  position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
   pointer-events: none; /* no bloquea clics ni hovers */
-  z-index: 9999;        /* encima de todo: la luz sigue al cursor */
+  z-index: -1;
 }
 
 

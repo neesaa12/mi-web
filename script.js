@@ -42,7 +42,7 @@ if (anio) anio.textContent = new Date().getFullYear();
 
 
 /* =========================================================
-   3. RÁFAGA DE LUZ DEL CURSOR (estela en canvas)
+   3. RASTRO BRILLANTE DEL CURSOR
    ========================================================= */
 
 const reduceMovimiento = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -50,66 +50,110 @@ const lienzo = document.getElementById("estela");
 
 if (lienzo && !reduceMovimiento) {
   const ctx = lienzo.getContext("2d");
-  const puntos = []; // historial de posiciones del cursor
-  const largoEstela = 26;
+  const rastro = []; // puntos del camino: { x, y, t0 }
 
-  // Colores según tema (los lee de las variables CSS)
+  const MANTENER = 3000;    // ms brillante antes de empezar a apagarse
+  const DESVANECER = 2000;  // ms de desvanecimiento lento
+  const VIDA = MANTENER + DESVANECER;
+
+  // Elementos donde NO queremos ver el rastro (cuadros, botones, ficha...)
+  const INTERACTIVO = ".tarjeta, .lista article, .boton, .boton-secundario, " +
+    ".email-boton, .form-boton, .modo-oscuro-boton, .hero-ficha, .ficha-avatar, " +
+    ".barra, .pie, .panel-contador, .boton-contador, .toast, .modal, .subir, " +
+    ".marca, .etiqueta, .nav a";
+
   const colorTema = () =>
     document.documentElement.getAttribute("data-tema") === "claro"
       ? { r: 139, g: 92, b: 246 }
       : { r: 196, g: 181, b: 253 };
-
+        // El canvas mide todo el documento, no solo la ventana
   function ajustarLienzo() {
-    lienzo.width = window.innerWidth;
-    lienzo.height = window.innerHeight;
+    lienzo.width = document.documentElement.clientWidth;
+    lienzo.height = document.documentElement.scrollHeight;
   }
   ajustarLienzo();
   window.addEventListener("resize", ajustarLienzo);
-
+  // Al cambiar el alto (contenido que aparece), lo recalculamos también
+  window.addEventListener("load", ajustarLienzo);
+    // Guardamos el punto en coordenadas de DOCUMENTO (y + scroll),
+  // así el rastro se queda "anclado" a la página y baja al hacer scroll.
+  let ultimoT = 0;
   window.addEventListener("pointermove", (e) => {
-    puntos.push({ x: e.clientX, y: e.clientY });
-    if (puntos.length > largoEstela) puntos.shift();
+    if (e.target.closest && e.target.closest(INTERACTIVO)) {
+      rastro.length = 0;
+      return;
+    }
+    const ahora = performance.now();
+    if (ahora - ultimoT < 24) return;
+    ultimoT = ahora;
+    rastro.push({
+      x: e.clientX,
+      y: e.clientY + window.scrollY, // ✔ coordenada de documento
+      t0: ahora
+    });
+    if (rastro.length > 200) rastro.shift();
   }, { passive: true });
 
-  function dibujar() {
+    function dibujar() {
     ctx.clearRect(0, 0, lienzo.width, lienzo.height);
-    const c = colorTema();
     const modoClaro = document.documentElement.getAttribute("data-tema") === "claro";
+    const ahora = performance.now();
+
+    // Quitamos los puntos que ya murieron
+    while (rastro.length && ahora - rastro[0].t0 > VIDA) rastro.shift();
+    if (rastro.length < 2) { requestAnimationFrame(dibujar); return; }
+
+    // La línea entera se apaga si el ratón lleva parado más de 3 s
+    const edadCabeza = ahora - rastro[rastro.length - 1].t0;
+    let vivo = 1;
+    if (edadCabeza > MANTENER) {
+      vivo = Math.max(0, 1 - (edadCabeza - MANTENER) / DESVANECER);
+    }
+    if (vivo <= 0) { requestAnimationFrame(dibujar); return; }
+
+    const cola = rastro[0];
+    const cabeza = rastro[rastro.length - 1];
+
+    // ✔ Gradiente suave y apagado: cola transparente -> cabeza apenas marcada
+    //    (termina en un morado suave, NO en blanco brillante)
+    const grad = ctx.createLinearGradient(cola.x, cola.y, cabeza.x, cabeza.y);
+    if (modoClaro) {
+      grad.addColorStop(0.0, "rgba(59,130,246,0.00)");
+      grad.addColorStop(0.5, "rgba(99,102,241,0.06)");
+      grad.addColorStop(1.0, "rgba(124,58,237,0.16)");
+    } else {
+      grad.addColorStop(0.0, "rgba(96,165,250,0.00)");
+      grad.addColorStop(0.5, "rgba(139,92,246,0.10)");
+      grad.addColorStop(1.0, "rgba(167,139,250,0.22)");
+    }
+
+    // Una ÚNICA pasada = línea suave difuminada, sin "núcleo" duro por encima
+    ctx.beginPath();
+    ctx.moveTo(cola.x, cola.y);
+    for (let i = 1; i < rastro.length; i++) ctx.lineTo(rastro[i].x, rastro[i].y);
+
+    ctx.globalAlpha = vivo;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.strokeStyle = grad;
     ctx.globalCompositeOperation = modoClaro ? "source-over" : "lighter";
 
-    for (let i = 0; i < puntos.length; i++) {
-      const p = puntos[i];
-      const t = i / puntos.length; // 0 cola -> 1 cabeza
-      const radio = 2 + t * 16;
-      const alpha = t * 0.5;
-      const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, radio);
-      g.addColorStop(0, `rgba(${c.r},${c.g},${c.b},${alpha})`);
-      g.addColorStop(1, `rgba(${c.r},${c.g},${c.b},0)`);
-      ctx.fillStyle = g;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, radio, 0, Math.PI * 2);
-      ctx.fill();
-    }
+    // ✔ Difuminado medio (no exagerado): el glow se fusiona con la línea
+    ctx.shadowColor = modoClaro ? "rgba(124,58,237,0.25)" : "rgba(139,92,246,0.35)";
+    ctx.shadowBlur = 22;        // ✔ suave (antes 45)
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.lineWidth = 6;          // ✔ ancho medio: se difumina sin verse "línea"
+    ctx.stroke();
 
-    // Cabeza más nítida
-    if (puntos.length) {
-      const cab = puntos[puntos.length - 1];
-      ctx.globalCompositeOperation = "source-over";
-      ctx.fillStyle = modoClaro ? "rgba(91,33,182,0.9)" : "rgba(240,235,255,0.95)";
-      ctx.beginPath();
-      ctx.arc(cab.x, cab.y, 3.5, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    // La estela se va apagando sola (fade)
-    if (puntos.length) puntos.shift();
+    // Reset
+    ctx.shadowBlur = 0;
+    ctx.globalAlpha = 1;
 
     requestAnimationFrame(dibujar);
   }
   requestAnimationFrame(dibujar);
 }
-
-
 /* =========================================================
    4. ANIMACIÓN DE APARICIÓN DE SECCIONES (scroll reveal)
    ========================================================= */
