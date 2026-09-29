@@ -49,6 +49,7 @@
         <a href="#hecho">Lo que he hecho</a>
         <a href="#gustos">Me gusta</a>
         <a href="#contacto">Contacto</a>
+        <a href="#sudoku">Sudoku</a>
       </nav>
 
       <!-- Botón de modo oscuro/claro -->
@@ -58,7 +59,7 @@
         id="modo-oscuro"
         aria-pressed="true"
       >
-        ☀️ Modo claro
+        Modo claro
       </button>
     </div>
 
@@ -187,6 +188,26 @@
           <h3>Montaña</h3>
           <p>Disfruto de la montaña, el aire libre y las experiencias relacionadas con la naturaleza.</p>
         </article>
+      </div>
+    </section>
+        <!-- Sección Sudoku -->
+    <section class="seccion" id="sudoku">
+      <h2>Sudoku · modo difícil</h2>
+      <p class="sudoku-info">
+        Tienes <strong>3 fallos</strong> como máximo. Coloca los números y la paleta de abajo se irá
+        vaciando: cuando un número desaparece, es que ya lo has usado todas sus veces.
+      </p>
+      <div class="sudoku-top">
+        <div class="sudoku-vidas" id="sudoku-vidas">Fallos: <span id="sudoku-fallos">0</span> / 3</div>
+        <button type="button" class="sudoku-reiniciar" id="sudoku-reiniciar">↻ Reiniciar</button>
+      </div>
+      <div class="sudoku-wrap">
+        <div class="sudoku-grid" id="sudoku-grid"></div>
+        <div class="sudoku-palette" id="sudoku-palette"></div>
+        <div class="sudoku-overlay" id="sudoku-overlay" hidden>
+          <p id="sudoku-mensaje"></p>
+          <button type="button" class="boton" id="sudoku-otra">Jugar otra vez</button>
+        </div>
       </div>
     </section>
   </main>

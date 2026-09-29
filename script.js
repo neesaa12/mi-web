@@ -418,3 +418,268 @@ if (formGithub) {
     cerrarModal();
   });
 }
+
+
+/* =========================================================
+   12. ✔ NUEVO · SUDOKU MODO DIFÍCIL
+   - Genera una solución válida (backtracking aleatorio).
+   - Deja 25 pistas (56 huecos) => difícil.
+   - 3 fallos máximo: al llegar a 3 se bloquea.
+   - Paleta con contador por dígito: cuando quedan 0 se oculta.
+   - Validación al colocar: si no coincide con la solución = fallo.
+   ========================================================= */
+
+(function () {
+  const grid = document.getElementById("sudoku-grid");
+  const palette = document.getElementById("sudoku-palette");
+  const fallosEl = document.getElementById("sudoku-fallos");
+  const vidasBox = document.getElementById("sudoku-vidas");
+  const overlay = document.getElementById("sudoku-overlay");
+  const mensaje = document.getElementById("sudoku-mensaje");
+  const btnReiniciar = document.getElementById("sudoku-reiniciar");
+  const btnOtra = document.getElementById("sudoku-otra");
+
+  if (!grid || !palette) return; // solo si existe la sección
+
+  const MAX_FALLOS = 3;
+  const PISTAS = 25;
+
+  let sol, pistas, tablero, givens, sel, fallos, bloqueado;
+
+  // Utilidades
+  function barajar(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+  function valido(g, r, c, v) {
+    for (let i = 0; i < 9; i++) {
+      if (g[r][i] === v || g[i][c] === v) return false;
+    }
+    const br = (r / 3 | 0) * 3, bc = (c / 3 | 0) * 3;
+    for (let i = 0; i < 3; i++)
+      for (let j = 0; j < 3; j++)
+        if (g[br + i][bc + j] === v) return false;
+    return true;
+  }
+      function generarSolucion() {
+    // Solución base VÁLIDA (patrón estándar: 1-9 sin repetir en filas,
+    // columnas ni cajas 3x3). Sobre ella aplicamos permutaciones que
+    // mantienen la validez, así el juego siempre cuadra.
+    const base = [
+      [1,2,3,4,5,6,7,8,9],
+      [4,5,6,7,8,9,1,2,3],
+      [7,8,9,1,2,3,4,5,6],
+      [2,3,4,5,6,7,8,9,1],
+      [5,6,7,8,9,1,2,3,4],
+      [8,9,1,2,3,4,5,6,7],
+      [3,4,5,6,7,8,9,1,2],
+      [6,7,8,9,1,2,3,4,5],
+      [9,1,2,3,4,5,6,7,8],
+    ];
+    let g = base.map((r) => r.slice());
+
+    // 1) Permutar los símbolos 1-9
+    const mapa = barajar([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    g = g.map((r) => r.map((v) => mapa[v - 1]));
+
+    // 2) Barajar filas dentro de cada banda (3x3 horizontal)
+    for (let b = 0; b < 3; b++) {
+      const orden = barajar([0, 1, 2]);
+      const banda = [0, 1, 2].map((i) => g[b * 3 + orden[i]]);
+      for (let i = 0; i < 3; i++) g[b * 3 + i] = banda[i];
+    }
+    // 3) Barajar las 3 bandas
+    const oB = barajar([0, 1, 2]);
+    const bandas = [];
+    for (const b of oB) bandas.push(g.slice(b * 3, b * 3 + 3));
+    g = bandas.flat();
+
+    // 4) Barajar columnas dentro de cada pila
+    for (let p = 0; p < 3; p++) {
+      const orden = barajar([0, 1, 2]);
+      for (let r = 0; r < 9; r++) {
+        const col = [0, 1, 2].map((i) => g[r][p * 3 + orden[i]]);
+        for (let i = 0; i < 3; i++) g[r][p * 3 + i] = col[i];
+      }
+    }
+    // 5) Barajar las 3 pilas
+    const oP = barajar([0, 1, 2]);
+    for (let r = 0; r < 9; r++) {
+      const nuevas = [];
+      for (const p of oP) nuevas.push(g[r].slice(p * 3, p * 3 + 3));
+      g[r] = nuevas.flat();
+    }
+
+    // 6) Transponer a veces (sigue siendo válida)
+    if (Math.random() < 0.5) {
+      g = g[0].map((_, i) => g.map((fila) => fila[i]));
+    }
+
+    return g;
+  }
+
+  function generarPistas(s, n) {
+    const p = s.map((r) => r.slice());
+    const pos = barajar([...Array(81).keys()]);
+    for (let i = 0; i < 81 - n; i++) {
+      const idx = pos[i];
+      p[idx / 9 | 0][idx % 9] = 0;
+    }
+    return p;
+  }
+
+  // Dibuja el tablero (81 celdas)
+  function render() {
+    grid.innerHTML = "";
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        const cell = document.createElement("div");
+        cell.className = "celda";
+        // Cajas 3x3 alternadas para diferenciarlas mejor
+        if ((Math.floor(r / 3) + Math.floor(c / 3)) % 2 === 1) cell.classList.add("caja-alt");
+        if ((c + 1) % 3 === 0 && c !== 8) cell.classList.add("b-d");
+        if ((r + 1) % 3 === 0 && r !== 8) cell.classList.add("b-b");
+        cell.dataset.r = r;
+        cell.dataset.c = c;
+        if (pistas[r][c]) {
+          cell.classList.add("given");
+          cell.textContent = pistas[r][c];
+        } else {
+          cell.classList.add("empty");
+        }
+        cell.addEventListener("click", () => seleccionar(r, c));
+        grid.appendChild(cell);
+      }
+    }
+    renderPalette();
+  }
+
+  // Paleta 1-9 con contador (9 - veces ya colocadas). Si quedan 0 -> oculto.
+  function renderPalette() {
+    palette.innerHTML = "";
+    const usados = Array(10).fill(0);
+    for (let r = 0; r < 9; r++)
+      for (let c = 0; c < 9; c++) {
+        const v = tablero[r][c];
+        if (v) usados[v]++;
+      }
+    for (let d = 1; d <= 9; d++) {
+      const quedan = 9 - usados[d];
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "pal-btn" + (quedan <= 0 ? " agotado" : "");
+      btn.dataset.d = d;
+      btn.innerHTML = `${d}<span class="pal-count">${quedan}</span>`;
+      btn.addEventListener("click", () => colocar(d));
+      palette.appendChild(btn);
+    }
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "sudoku-borrar";
+    del.textContent = "⌫";
+    del.addEventListener("click", borrar);
+    palette.appendChild(del);
+  }
+
+  function celdaEl(r, c) { return grid.children[r * 9 + c]; }
+
+    function seleccionar(r, c) {
+    if (bloqueado) return;                 // ya permite clicar casillas dadas
+    sel = { r, c };
+    // Quita los resaltados de la selección anterior
+    [...grid.children].forEach((e) =>
+      e.classList.remove("sel", "fila-sel", "col-sel")
+    );
+    // Marca la fila (línea horizontal) y la columna (línea vertical)
+    for (let k = 0; k < 9; k++) {
+      celdaEl(r, k).classList.add("fila-sel"); // fila
+      celdaEl(k, c).classList.add("col-sel");  // columna
+    }
+    celdaEl(r, c).classList.add("sel");        // la casilla concreta, más marcada
+  }
+
+  function colocar(d) {
+    if (bloqueado || !sel) return;
+    const { r, c } = sel;
+    if (givens[r][c] || tablero[r][c] === d) return;
+
+    if (sol[r][c] === d) {
+      tablero[r][c] = d;
+      const el = celdaEl(r, c);
+      el.textContent = d;
+      el.classList.remove("empty");
+      el.classList.add("filled");
+      renderPalette();
+      comprobarVictoria();
+    } else {
+      fallos++;
+      fallosEl.textContent = fallos;
+      const el = celdaEl(r, c);
+      el.classList.add("error");
+      setTimeout(() => el.classList.remove("error"), 400);
+      if (fallos >= MAX_FALLOS) bloquear();
+    }
+  }
+
+  function borrar() {
+    if (bloqueado || !sel) return;
+    const { r, c } = sel;
+    if (givens[r][c] || !tablero[r][c]) return;
+    tablero[r][c] = 0;
+    const el = celdaEl(r, c);
+    el.textContent = "";
+    el.classList.remove("filled");
+    el.classList.add("empty");
+    renderPalette();
+  }
+
+  function comprobarVictoria() {
+    for (let r = 0; r < 9; r++)
+      for (let c = 0; c < 9; c++)
+        if (!tablero[r][c]) return; // quedan huecos
+    // Completo y todo correcto => victoria
+    mostrarOverlay("¡Sudoku resuelto! Sin fallos: " + fallos + "/3");
+  }
+
+  function bloquear() {
+    bloqueado = true;
+    vidasBox.classList.add("perder");
+    mostrarOverlay("Fin del juego: has agotado los 3 fallos.");
+  }
+
+  function mostrarOverlay(texto) {
+    mensaje.textContent = texto;
+    overlay.hidden = false;
+  }
+
+  function iniciar() {
+    sol = generarSolucion();
+    pistas = generarPistas(sol, PISTAS);
+    tablero = pistas.map((r) => r.slice());
+    givens = pistas.map((r) => r.map((v) => v !== 0));
+    sel = null;
+    fallos = 0;
+    bloqueado = false;
+    fallosEl.textContent = "0";
+    vidasBox.classList.remove("perder");
+    overlay.hidden = true;
+    render();
+  }
+
+  if (btnReiniciar) btnReiniciar.addEventListener("click", iniciar);
+  if (btnOtra) btnOtra.addEventListener("click", iniciar);
+
+  // Teclado: 1-9 coloca, Backspace/Delete borra (solo si hay selección)
+  document.addEventListener("keydown", (e) => {
+    const t = e.target;
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "SELECT")) return;
+    if (bloqueado || !sel) return;
+    if (e.key >= "1" && e.key <= "9") colocar(Number(e.key));
+    else if (e.key === "Backspace" || e.key === "Delete") borrar();
+  });
+
+  iniciar();
+})();

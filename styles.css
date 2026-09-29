@@ -911,3 +911,170 @@ html[data-tema="claro"] .contacto .form-boton:hover {
   background: rgba(139, 92, 246, 0.18);
   border-color: var(--morado);
 }
+
+/* =========================================================
+   20. SUDOKU (modo difícil) — colores más suaves y cajas 3x3 claras
+   ========================================================= */
+
+/* Variables propias del sudoku (oscuro por defecto) */
+:root {
+  --sudoku-celda: #1b2444;        /* fondo celda, más clarito */
+  --sudoku-celda-alt: #242e58;    /* caja alternada, un punto más clara */
+  --sudoku-linea: rgba(167,139,250,0.14);   /* línea fina entre celdas */
+  --sudoku-linea-caja: rgba(167,139,250,0.55); /* divisor de cajas 3x3 */
+  --sudoku-dado: #ffffff;         /* números dados */
+  --sudoku-user: #93c5fd;         /* números que colocas */
+}
+html[data-tema="claro"] {
+  --sudoku-celda: #ffffff;
+  --sudoku-celda-alt: #ece4ff;    /* caja alternada lila suave */
+  --sudoku-linea: rgba(91,33,182,0.12);
+  --sudoku-linea-caja: rgba(91,33,182,0.6); /* más oscura => más contraste */
+  --sudoku-dado: #241a3d;
+  --sudoku-user: #5b21b6;
+}
+
+.sudoku-info { color: var(--texto-suave); max-width: 60ch; }
+
+.sudoku-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.sudoku-vidas { font-weight: 700; color: var(--texto); }
+.sudoku-vidas.perder { color: #ef4444; }
+
+.sudoku-reiniciar {
+  appearance: none; -webkit-appearance: none;
+  padding: 0.5rem 1.1rem;
+  border-radius: var(--radio-boton);
+  border: 1px solid var(--borde);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-family: inherit; font-size: 0.95rem; font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+.sudoku-reiniciar:hover { border-color: var(--morado); transform: translateY(-2px); }
+
+.sudoku-wrap {
+  position: relative;
+  width: min(92vw, 460px);
+  margin: 0 auto;
+}
+
+/* Cuadrícula */
+.sudoku-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);   /* ✔ 9 filas iguales => celdas siempre cuadradas */
+  aspect-ratio: 1 / 1;
+  border: 2px solid var(--sudoku-linea-caja);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--sudoku-celda);
+  box-shadow: var(--sombra-suave);
+}
+
+.celda {
+  display: grid;
+  place-items: center;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: clamp(1rem, 4.2vw, 1.7rem);
+  color: var(--sudoku-user);
+  background: var(--sudoku-celda);
+  border: 1px solid var(--sudoku-linea);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+/* Cajas 3x3 alternadas (la clase caja-alt la añade el JS) */
+.celda.caja-alt { background: var(--sudoku-celda-alt); }
+
+/* Números dados: solo cambian de color, mantienen el fondo de la caja */
+.celda.given { color: var(--sudoku-dado); cursor: default; }
+.celda.filled { color: var(--sudoku-user); }
+
+/* Divisores gruesos de las cajas 3x3 */
+.celda.b-d { border-right: 2px solid var(--sudoku-linea-caja); }
+.celda.b-b { border-bottom: 2px solid var(--sudoku-linea-caja); }
+
+/* Celda seleccionada y error */
+/* Cruz al seleccionar: fila (morado) + columna (azul) + casilla (más fuerte) */
+.celda.fila-sel { background: rgba(139, 92, 246, 0.16) !important; }
+.celda.col-sel  { background: rgba(96, 165, 250, 0.16) !important; }
+.celda.sel      { background: rgba(167, 139, 250, 0.34) !important; }
+.celda.error { color: #fff !important; background: #ef4444 !important; animation: shake 0.35s; }
+
+/* Paleta */
+.sudoku-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+.pal-btn {
+  position: relative;
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--borde);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-family: var(--fuente-titulo);
+  font-weight: 700; font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.3s ease;
+}
+.pal-btn:hover { border-color: var(--morado); transform: translateY(-2px); }
+.pal-btn .pal-count {
+  position: absolute;
+  top: -7px; right: -7px;
+  min-width: 16px; height: 16px;
+  font-size: 0.7rem;
+  border-radius: 999px;
+  background: var(--grad-marca);
+  color: #fff;
+  display: grid; place-items: center;
+  padding: 0 3px;
+}
+.pal-btn.agotado { opacity: 0; transform: scale(0.5); pointer-events: none; }
+
+.sudoku-borrar {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--borde);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.sudoku-borrar:hover { border-color: var(--morado); }
+
+/* Overlay de fin / victoria */
+.sudoku-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 1rem;
+  background: rgba(13, 5, 34, 0.88);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 12px;
+  color: #fff;
+}
+.sudoku-overlay[hidden] { display: none; }
+.sudoku-overlay p { margin: 0; font-size: 1.2rem; font-weight: 700; }
+
+html[data-tema="claro"] .sudoku-overlay {
+  background: rgba(245, 242, 255, 0.92);
+  color: #241a3d;
+}
