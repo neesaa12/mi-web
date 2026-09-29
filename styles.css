@@ -90,6 +90,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  padding-top: 66px;
 }
 
 ::selection {
@@ -168,8 +169,10 @@ a:focus-visible, button:focus-visible {
 
 /* --- Barra superior fija --- */
 .barra {
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 100;
   display: flex;
   align-items: center;
@@ -871,3 +874,40 @@ body, .seccion, .lista article, .tarjeta, .panel-contador, .boton-contador, .bar
 html[data-tema="claro"] .modal-fondo { background: rgba(30, 20, 60, 0.45); }
 html[data-tema="claro"] .modal-enviar,
 html[data-tema="claro"] .pills label.activa { color: #ffffff; }
+
+/* =========================================================
+   19. ✔ PIE (Contacto) CLAR EN MODO CLARO + transición suave
+   En modo oscuro el footer se queda como está (fondo oscuro).
+   En modo claro se vuelve clarito, con texto y botones oscuros.
+   ========================================================= */
+
+/* Transición suave del footer al cambiar de tema (en ambos sentidos) */
+.pie, .pie h2, .pie p, .anio,
+.contacto a, .contacto .email-boton, .contacto .form-boton {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Fondo del footer en modo claro (lila muy suave) */
+html[data-tema="claro"] .pie {
+  background: linear-gradient(135deg, #efe9ff, #f5f2ff);
+  color: #241a3d;
+}
+html[data-tema="claro"] .pie h2 { color: #241a3d; }
+html[data-tema="claro"] .pie p  { color: #5b5078; }
+html[data-tema="claro"] .anio   { color: #6b5b95; }
+
+/* Botones (Email / Formulario / LinkedIn) en modo claro: morado sobre fondo claro */
+html[data-tema="claro"] .contacto a,
+html[data-tema="claro"] .contacto .email-boton,
+html[data-tema="claro"] .contacto .form-boton {
+  color: #5b21b6;
+  background: rgba(139, 92, 246, 0.10);
+  border-color: rgba(139, 92, 246, 0.28);
+}
+html[data-tema="claro"] .contacto a:hover,
+html[data-tema="claro"] .contacto .email-boton:hover,
+html[data-tema="claro"] .contacto .form-boton:hover {
+  color: #5b21b6;
+  background: rgba(139, 92, 246, 0.18);
+  border-color: var(--morado);
+}
