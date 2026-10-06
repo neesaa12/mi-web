@@ -420,17 +420,62 @@ a:focus-visible, button:focus-visible {
    8. LISTA "LO QUE HE HECHO"
    ========================================================= */
 
+
 .lista { display: grid; gap: 1rem; }
+
 .lista article {
+  position: relative;
+  overflow: hidden;
+  transform-origin: center;
   background: var(--superficie);
   border: 1px solid var(--borde);
   border-radius: var(--radio-suave);
   padding: 1.5rem;
   box-shadow: var(--sombra-suave);
-  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
 }
-.lista article:hover { transform: translateY(-4px); border-color: var(--morado); box-shadow: var(--sombra-media); }
-.lista h3 { margin: 0 0 0.5rem; color: var(--azul-oscuro); font-size: 1.2rem; }
+
+/* Barrido de llum (shine) en passar el ratolí */
+.lista article::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -75%;
+  width: 50%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.18), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+/* Més gran + canvi de color + ombra de marca */
+.lista article:hover {
+  transform: translateY(-10px) scale(1.12) !important;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(59, 130, 246, 0.14)), var(--superficie);
+  border-color: var(--morado);
+  box-shadow: 0 22px 50px rgba(139, 92, 246, 0.35);
+  z-index: 2;
+}
+.lista article:hover::before { left: 125%; }
+
+/* Títol: altre format en passar el ratolí (majúscules + espaiat) */
+.lista h3 {
+  margin: 0 0 0.5rem;
+  color: var(--azul-oscuro);
+  font-size: 1.2rem;
+  font-family: var(--fuente-titulo);
+  transition: color 0.3s ease, letter-spacing 0.3s ease;
+}
+.lista article:hover h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 700;
+  color: var(--morado-oscuro);
+}
+
 .lista p { margin: 0; color: var(--texto-suave); }
 
 
