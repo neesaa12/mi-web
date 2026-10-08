@@ -683,3 +683,122 @@ if (formGithub) {
 
   iniciar();
 })();
+
+/* =========================================================
+   13. PROYECTOS DESDE LA API DE GITHUB (req 5 + 2 + 6)
+   Recorrido del dato (para la defensa):
+   fetch(API) → response.ok → response.json() → map/reduce →
+   crearTarjetaRepo(repo) → appendChild al grid.
+   Estado: loading | ok | error | empty (función con estado).
+   ========================================================= */
+
+(function () {
+  const USUARIO = "neesaa12";
+  const API_URL = `https://api.github.com/users/${USUARIO}/repos?sort=updated&per_page=100`;
+
+  // Colores oficiales de lenguaje en GitHub (fallback: morado)
+  const LANG_COLORS = {
+    JavaScript: "#f1e05a", TypeScript: "#3178c6", HTML: "#e34c26", CSS: "#563d7c",
+    Python: "#3572A5", Java: "#b07219", C: "#555555", "C++": "#f34b7d", "C#": "#178600",
+    Shell: "#89e051", PHP: "#4F5D95", Go: "#00ADD8", Rust: "#dea584", Vue: "#41b883",
+    Dart: "#00B4AB", Kotlin: "#A97BFF", Ruby: "#701516", Swift: "#F05138"
+  };
+
+  const grid = document.getElementById("proyectos-grid");
+  const estadoBox = document.getElementById("proyectos-estado");
+  const resumen = document.getElementById("proyectos-resumen");
+  const btnRecargar = document.getElementById("proyectos-recargar");
+  if (!grid) return;
+
+  let estado = "loading"; // loading | ok | error | empty
+
+  // --- Componente reutilizable: una tarjeta de repo ---
+  function crearTarjetaRepo(repo, i) {
+    const art = document.createElement("article");
+    art.className = "tarjeta-repo";
+    art.style.animation = "aparecer 0.5s cubic-bezier(0.22,1,0.36,1) both";
+    art.style.animationDelay = (0.08 * i) + "s";
+
+    const color = LANG_COLORS[repo.language] || "#a78bfa";
+    const fecha = new Date(repo.updated_at).toLocaleDateString("es-ES", { day: "2-digit", month: "short", year: "numeric" });
+
+    art.innerHTML = `
+      <h3 class="repo-nombre">${escapar(repo.name)}</h3>
+      <p class="repo-desc">${repo.description ? escapar(repo.description) : "Sin descripción."}</p>
+      <div class="repo-meta">
+        ${repo.language ? `<span class="repo-lang"><i style="background:${color}"></i>${escapar(repo.language)}</span>` : ""}
+        <span>⭐ ${formato(repo.stargazers_count)}</span>
+        <span>🔱 ${formato(repo.forks_count)}</span>
+        <span>↻ ${fecha}</span>
+      </div>
+      <a class="repo-enlace" href="${repo.html_url}" target="_blank" rel="noopener noreferrer">Ver en GitHub ↗</a>
+    `;
+    return art;
+  }
+
+  // Escapa texto de la API (evita XSS) y formatea números (1.2k)
+  function escapar(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+  function formato(n) { return n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, "") + "k" : n; }
+
+  function renderResumen(repos) {
+    const stars = repos.reduce((a, r) => a + r.stargazers_count, 0);
+    const forks = repos.reduce((a, r) => a + r.forks_count, 0);
+    resumen.textContent = `${repos.length} repositorios · ⭐ ${formato(stars)} · 🔱 ${formato(forks)}`;
+  }
+
+    function pintarLoading() {
+    estadoBox.hidden = false;
+    estadoBox.className = "proyectos-estado";
+    let sk = "";
+    for (let i = 0; i < 4; i++)
+      sk += `<div class="skeleton"><div class="sk-line titulo"></div><div class="sk-line corta"></div><div class="sk-line mini"></div></div>`;
+    estadoBox.innerHTML = sk;
+    grid.innerHTML = "";
+  }
+
+  function pintarError(mensaje) {
+    estadoBox.hidden = false;
+    estadoBox.className = "proyectos-estado error";
+    estadoBox.innerHTML = `<p>${escapar(mensaje)}</p>`;
+    grid.innerHTML = "";
+    resumen.textContent = "Métricas no disponibles.";
+  }
+
+  function pintarVacio() {
+    estadoBox.hidden = false;
+    estadoBox.className = "proyectos-estado";
+    estadoBox.innerHTML = `<p>Aún no hay repositorios públicos en esta cuenta.</p>`;
+    grid.innerHTML = "";
+    resumen.textContent = "0 repositorios.";
+  }
+
+  function pintarRepos(repos) {
+    estadoBox.hidden = true; // ahora sí funciona: no hay display inline que lo pise
+    grid.innerHTML = "";
+    repos.forEach((repo, i) => grid.appendChild(crearTarjetaRepo(repo, i)));
+  }
+
+  async function cargarRepos() {
+    estado = "loading";
+    pintarLoading();
+    try {
+      const res = await fetch(API_URL, { headers: { Accept: "application/vnd.github+json" } });
+      if (res.status === 403) throw new Error("Límite de peticiones de GitHub alcanzado. Inténtalo en unos minutos.");
+      if (res.status === 404) throw new Error(`No se encontró el usuario "${USUARIO}" en GitHub.`);
+      if (!res.ok) throw new Error("No se pudo cargar la lista de proyectos.");
+      const datos = await res.json();
+      if (!Array.isArray(datos) || datos.length === 0) { estado = "empty"; pintarVacio(); return; }
+      estado = "ok";
+      renderResumen(datos);
+      pintarRepos(datos);
+    } catch (e) {
+      estado = "error";
+      pintarError(e.message);
+    }
+  }
+
+  if (btnRecargar) btnRecargar.addEventListener("click", cargarRepos);
+  cargarRepos();
+})();

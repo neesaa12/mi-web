@@ -1123,3 +1123,124 @@ html[data-tema="claro"] .sudoku-overlay {
   background: rgba(245, 242, 255, 0.92);
   color: #241a3d;
 }
+
+/* =========================================================
+   21. PROYECTOS (API GitHub) — estado + componente reutilizable
+   ========================================================= */
+
+.proyectos-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.proyectos-resumen { margin: 0; color: var(--texto-suave); font-weight: 600; }
+.proyectos-recargar {
+  appearance: none; -webkit-appearance: none;
+  padding: 0.5rem 1.1rem;
+  border-radius: var(--radio-boton);
+  border: 1px solid var(--borde);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-family: inherit; font-size: 0.95rem; font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+.proyectos-recargar:hover { border-color: var(--morado); transform: translateY(-2px); }
+
+.proyectos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Estado de carga: skeleton con shimmer (animación CON intención, no decorativa) */
+/* Contenedor de estado: siempre grid, se oculta SOLO con [hidden] */
+.proyectos-estado {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+  color: var(--texto-suave);
+}
+.proyectos-estado[hidden] { display: none !important; } /* ← la clave */
+.proyectos-estado.error { color: #ef4444; }
+.proyectos-estado > p { grid-column: 1 / -1; margin: 0; } /* mensajes centrados a todo el ancho */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-suave);
+  padding: 1.5rem;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.10), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 1.4s infinite;
+}
+.sk-line { height: 12px; border-radius: 6px; background: var(--borde); margin-bottom: 0.8rem; }
+.sk-line.titulo { width: 60%; height: 18px; }
+.sk-line.corta { width: 85%; }
+.sk-line.mini { width: 40%; }
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+
+/* Tarjeta de repo (componente reutilizable) */
+.tarjeta-repo {
+  position: relative;
+  overflow: hidden;
+  transform-origin: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-suave);
+  padding: 1.5rem;
+  box-shadow: var(--sombra-suave);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.tarjeta-repo::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -75%;
+  width: 50%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.14), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+.tarjeta-repo:hover {
+  transform: translateY(-10px) scale(1.12) !important;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(59, 130, 246, 0.14)), var(--superficie);
+  border-color: var(--morado);
+  box-shadow: 0 22px 50px rgba(139, 92, 246, 0.35);
+  z-index: 2;
+}
+.tarjeta-repo:hover::before { left: 125%; }
+
+.repo-nombre {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--morado-oscuro);
+  transition: color 0.3s ease, letter-spacing 0.3s ease;
+}
+.tarjeta-repo:hover .repo-nombre {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--azul-oscuro);
+}
+.repo-desc { margin: 0; color: var(--texto-suave); font-size: 0.95rem; flex: 1; }
+.repo-meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-size: 0.85rem; color: var(--texto-suave); }
+.repo-lang { display: inline-flex; align-items: center; gap: 0.4rem; }
+.repo-lang i { width: 10px; height: 10px; border-radius: 50%; background: var(--morado); display: inline-block; }
+.repo-enlace { font-weight: 600; color: var(--azul-oscuro); }
