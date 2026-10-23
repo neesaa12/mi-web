@@ -1,0 +1,1246 @@
+/* =========================================================
+   styles.css
+   Web personal de Vanesa Petrova Aygarova
+   Colores: morado, azul y blanco
+   Estilo: minimalista, fondo SÓLIDO, ráfaga en el cursor
+   ========================================================= */
+
+
+/* =========================================================
+   1. VARIABLES (MODO OSCURO = POR DEFECTO · MORADO MUY OSCURO)
+   ========================================================= */
+
+:root {
+
+  --fuente-cuerpo: "Manrope", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --fuente-titulo: "Space Grotesk", "Manrope", system-ui, sans-serif;
+
+  --morado: #a78bfa;
+  --morado-oscuro: #c4b5fd;
+  --azul: #60a5fa;
+  --azul-oscuro: #93c5fd;
+  --blanco: #ffffff;
+
+  --fondo: #0d0522;          /* fondo SÓLIDO */
+  --superficie: #160d2e;
+  --superficie-2: #1d1440;
+  --borde: #2e2158;
+
+  --texto: #e9e2ff;
+  --texto-suave: #b3a6d6;
+
+  --grad-marca: linear-gradient(135deg, #a78bfa, #60a5fa);
+  --grad-titulo: linear-gradient(90deg, #c4b5fd, #93c5fd);
+  --grad-hero: linear-gradient(90deg, #ffffff, #c4b5fd 45%, #93c5fd);
+  --grad-animado: linear-gradient(90deg, #a78bfa, #60a5fa, #c4b5fd, #a78bfa);
+
+  --sombra-suave: 0 12px 30px rgba(0, 0, 0, 0.5);
+  --sombra-media: 0 18px 45px rgba(0, 0, 0, 0.6);
+  --radio-suave: 20px;
+  --radio-boton: 999px;
+
+  --ancho-max: 900px;
+}
+
+html[data-tema="claro"] {
+  --morado: #8b5cf6;
+  --morado-oscuro: #5b21b6;
+  --azul: #3b82f6;
+  --azul-oscuro: #1e40af;
+
+  --fondo: #f5f2ff;
+  --superficie: #ffffff;
+  --superficie-2: #efe9ff;
+  --borde: #ddd3f5;
+
+  --texto: #241a3d;
+  --texto-suave: #5b5078;
+
+  --grad-marca: linear-gradient(135deg, #8b5cf6, #3b82f6);
+  --grad-titulo: linear-gradient(90deg, #5b21b6, #1e40af);
+  --grad-animado: linear-gradient(90deg, #8b5cf6, #3b82f6, #8b5cf6, #3b82f6);
+
+  --sombra-suave: 0 10px 25px rgba(91, 33, 182, 0.10);
+  --sombra-media: 0 14px 35px rgba(59, 130, 246, 0.14);
+}
+
+
+/* =========================================================
+   2. RESET BÁSICO
+   ========================================================= */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-color: var(--morado) var(--superficie); /* Firefox */
+  scrollbar-width: thin;
+}
+
+body {
+  margin: 0;
+  font-family: var(--fuente-cuerpo);
+  font-size: 1.0625rem;          /* 17px: un pelín más grande y cómodo */
+  color: var(--texto);
+  background: var(--fondo);
+  line-height: 1.7;
+  letter-spacing: 0.01em;        /* respiro sutil entre letras */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  padding-top: 66px;
+}
+
+::selection {
+  background: var(--morado);
+  color: var(--blanco);
+}
+
+::-webkit-scrollbar { width: 12px; }
+::-webkit-scrollbar-track { background: var(--superficie); }
+::-webkit-scrollbar-thumb {
+  background: var(--grad-marca);
+  border-radius: 999px;
+  border: 3px solid var(--superficie);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(var(--morado-oscuro), var(--azul-oscuro));
+}
+
+img { max-width: 100%; display: block; }
+ul { list-style: none; margin: 0; padding: 0; }
+
+/* Compensa la barra fija al saltar a una sección */
+section[id], footer[id] { scroll-margin-top: 90px; }
+
+
+/* =========================================================
+   3. ENLACES Y ENFOQUE (accesibilidad)
+   ========================================================= */
+
+a { color: var(--azul-oscuro); text-decoration: none; transition: color 0.25s ease; }
+a:hover { color: var(--morado-oscuro); }
+
+a:focus-visible, button:focus-visible {
+  outline: 3px solid var(--morado);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
+
+/* =========================================================
+   4. RÁFAGA DE LUZ DEL CURSOR (canvas a pantalla completa)
+   ========================================================= */
+
+.estela {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none; /* no bloquea clics ni hovers */
+  z-index: -1;
+}
+
+
+/* =========================================================
+   5. KEYFRAMES
+   ========================================================= */
+
+@keyframes aparecer {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes brillo { to { background-position: 200% center; } }
+@keyframes palabra {
+  from { opacity: 0; transform: translateY(40px) rotate(2deg); }
+  to   { opacity: 1; transform: translateY(0) rotate(0); }
+}
+@keyframes subrayar { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes pop {
+  0% { opacity: 0; transform: scale(0.96) translateY(-6px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+
+/* =========================================================
+   6. CABECERA (barra + hero)
+   ========================================================= */
+
+/* --- Barra superior fija --- */
+.barra {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.85rem clamp(1rem, 4vw, 2.5rem);
+  background: var(--superficie);
+  border-bottom: 1px solid var(--borde);
+}
+
+/* Marca: iniciales en badge + nombre */
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 800;
+  color: var(--texto);
+}
+.marca-logo {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--grad-marca);
+  color: #fff;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+.marca-texto { font-size: 1rem; }
+
+/* Menú */
+.nav { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+.nav a {
+  position: relative;
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radio-boton);
+  color: var(--texto-suave);
+  font-weight: 600;
+  transition: color 0.25s ease, background-color 0.25s ease;
+}
+.nav a:hover { color: var(--texto); background: var(--superficie-2); }
+.nav a::after {
+  content: "";
+  position: absolute;
+  left: 0.85rem;
+  right: 0.85rem;
+  bottom: 0.3rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--grad-marca);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+.nav a.activo { color: var(--texto); }
+.nav a.activo::after { transform: scaleX(1); }
+
+/* Botón de modo oscuro/claro */
+.modo-oscuro-boton {
+  padding: 0.5rem 0.95rem;
+  border-radius: var(--radio-boton);
+  background: var(--superficie-2);
+  color: var(--texto);
+  border: 1px solid var(--borde);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.25s ease, border-color 0.25s ease;
+}
+.modo-oscuro-boton:hover { border-color: var(--morado); }
+
+/* --- Hero reestructurado: 2 columnas, texto a la izquierda --- */
+.hero {
+  max-width: var(--ancho-max);
+  margin: 0 auto;
+  padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1rem, 4vw, 2.5rem);
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.hero-texto { max-width: 640px; }
+
+.etiqueta {
+  display: inline-block;
+  margin-bottom: 1rem;
+  padding: 0.4rem 1rem;
+  border-radius: var(--radio-boton);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--morado-oscuro);
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+}
+
+.hero h1 {
+  margin: 0;
+  font-size: clamp(2.1rem, 5vw, 3.4rem);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--texto);
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .hero h1 {
+    background: var(--grad-animado);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: brillo 6s linear infinite;
+  }
+}
+.hero h1 .palabra {
+  display: inline-block;
+  opacity: 0;
+  animation: palabra 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.frase {
+  margin: 1.1rem 0 0;
+  font-size: 1.1rem;
+  color: var(--texto-suave);
+}
+
+.hero-acciones { display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 1.8rem; }
+
+.boton {
+  display: inline-block;
+  padding: 0.85rem 1.7rem;
+  border-radius: var(--radio-boton);
+  background: var(--grad-marca);
+  color: #0d0522;
+  font-weight: 700;
+  box-shadow: var(--sombra-suave);
+  transition: transform 0.25s ease, filter 0.25s ease;
+}
+.boton:hover { transform: translateY(-3px); filter: brightness(1.08); color: #0d0522; }
+
+.boton-secundario {
+  background: transparent;
+  color: var(--texto);
+  border: 1px solid var(--borde);
+  box-shadow: none;
+}
+.boton-secundario:hover { border-color: var(--morado); color: var(--texto); }
+
+/* Entrada escalonada */
+.hero-texto > * { animation: aparecer 0.8s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.etiqueta      { animation-delay: 0.05s; }
+.hero h1       { animation-delay: 0.15s; }
+.frase         { animation-delay: 0.35s; }
+.hero-acciones { animation-delay: 0.5s; }
+.hero-ficha    { animation: aparecer 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.45s both; }
+
+/* Ficha-resumen a la derecha */
+.hero-ficha {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-suave);
+  padding: 1.75rem;
+  box-shadow: var(--sombra-suave);
+  text-align: center;
+}
+.ficha-avatar {
+  width: 76px;
+  height: 76px;
+  margin: 0 auto 0.9rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--grad-marca);
+  color: #fff;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+.ficha-nombre {
+  margin: 0 0 1rem;
+  font-weight: 700;
+  color: var(--texto);
+}
+.ficha-datos {
+  margin: 0;
+  display: grid;
+  gap: 0.55rem;
+  text-align: left;
+}
+.ficha-datos > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--borde);
+}
+.ficha-datos > div:last-child { border-bottom: none; padding-bottom: 0; }
+.ficha-datos dt { color: var(--texto-suave); font-weight: 600; }
+.ficha-datos dd { margin: 0; color: var(--texto); font-weight: 700; }
+
+.hero h1, .seccion h2, .marca { font-family: var(--fuente-titulo); }
+
+/* =========================================================
+   7. SECCIONES Y TÍTULOS
+   ========================================================= */
+
+.seccion { max-width: var(--ancho-max); margin: 0 auto; padding: 3.5rem clamp(1rem, 4vw, 2.5rem); }
+
+.seccion h2 {
+  position: relative;
+  margin: 0 0 1.75rem;
+  padding-bottom: 0.75rem;
+  font-size: 2rem;
+  font-weight: 750;
+  color: var(--texto);
+}
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  .seccion h2 {
+    background: var(--grad-titulo);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+.seccion h2::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 70px; height: 4px;
+  border-radius: 4px;
+  background: var(--grad-marca);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.seccion.visible h2::after { animation: subrayar 0.6s ease 0.2s forwards; }
+
+.seccion p { margin: 0 0 1rem; max-width: 800px; color: var(--texto-suave); }
+.seccion p:last-child { margin-bottom: 0; }
+
+
+/* =========================================================
+   8. LISTA "LO QUE HE HECHO"
+   ========================================================= */
+
+
+.lista { display: grid; gap: 1rem; }
+
+.lista article {
+  position: relative;
+  overflow: hidden;
+  transform-origin: center;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-suave);
+  padding: 1.5rem;
+  box-shadow: var(--sombra-suave);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+/* Barrido de llum (shine) en passar el ratolí */
+.lista article::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -75%;
+  width: 50%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.18), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+/* Més gran + canvi de color + ombra de marca */
+.lista article:hover {
+  transform: translateY(-10px) scale(1.12) !important;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(59, 130, 246, 0.14)), var(--superficie);
+  border-color: var(--morado);
+  box-shadow: 0 22px 50px rgba(139, 92, 246, 0.35);
+  z-index: 2;
+}
+.lista article:hover::before { left: 125%; }
+
+/* Títol: altre format en passar el ratolí (majúscules + espaiat) */
+.lista h3 {
+  margin: 0 0 0.5rem;
+  color: var(--azul-oscuro);
+  font-size: 1.2rem;
+  font-family: var(--fuente-titulo);
+  transition: color 0.3s ease, letter-spacing 0.3s ease;
+}
+.lista article:hover h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 700;
+  color: var(--morado-oscuro);
+}
+
+.lista p { margin: 0; color: var(--texto-suave); }
+
+
+/* =========================================================
+   9. CUADRÍCULA "ME GUSTA" (2 columnas)
+   ========================================================= */
+
+.gustos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+
+.tarjeta {
+  position: relative;
+  overflow: hidden;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-suave);
+  padding: 1.75rem;
+  box-shadow: var(--sombra-suave);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+
+/* Más grande + cambio de color + sombra de marca */
+.tarjeta:hover {
+  transform: translateY(-10px) scale(1.1);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(59, 130, 246, 0.14)), var(--superficie);
+  border-color: var(--morado);
+  box-shadow: 0 22px 50px rgba(139, 92, 246, 0.35);
+}
+
+/* Barrido de luz (shine) al pasar el ratón */
+.tarjeta::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+.tarjeta:hover::before { left: 125%; }
+
+/* Emoji decorativo (sale del atributo data-emoji) */
+.tarjeta::after {
+  content: attr(data-emoji);
+  position: absolute;
+  top: 0.9rem;
+  right: 1rem;
+  font-size: 1.6rem;
+  opacity: 0;
+  transform: scale(0.4) rotate(-25deg);
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+
+.tarjeta:hover::after {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+}
+
+/* Título: otro formato al pasar el ratón (mayúsculas + espaciado) */
+.tarjeta h3 {
+  margin: 0 0 0.6rem;
+  color: var(--morado-oscuro);
+  font-size: 1.25rem;
+  font-family: var(--fuente-titulo);
+  transition: color 0.3s ease, letter-spacing 0.3s ease;
+}
+.tarjeta:hover h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 700;
+  color: var(--azul-oscuro);
+}
+
+.tarjeta p { margin: 0; color: var(--texto-suave); }
+
+/* Revelado escalonado */
+.seccion.visible .tarjeta,
+.seccion.visible .lista article { animation: aparecer 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.seccion.visible .gustos .tarjeta:nth-child(1) { animation-delay: 0.10s; }
+.seccion.visible .gustos .tarjeta:nth-child(2) { animation-delay: 0.20s; }
+.seccion.visible .gustos .tarjeta:nth-child(3) { animation-delay: 0.30s; }
+.seccion.visible .gustos .tarjeta:nth-child(4) { animation-delay: 0.40s; }
+.seccion.visible .lista article:nth-child(1)   { animation-delay: 0.10s; }
+.seccion.visible .lista article:nth-child(2)   { animation-delay: 0.20s; }
+.seccion.visible .lista article:nth-child(3)   { animation-delay: 0.30s; }
+
+
+/* =========================================================
+   10. CONTADOR DESPLEGABLE
+   ========================================================= */
+
+.boton-contador {
+  display: inline-block;
+  margin: 0 0 1.75rem;
+  padding: 0.8rem 1.4rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-boton);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+.boton-contador:hover { background: var(--superficie); border-color: var(--morado); transform: translateY(-2px); }
+
+.panel-contador {
+  max-width: 720px;
+  margin: 0 0 2rem;
+  padding: 1.5rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-suave);
+  background: var(--superficie);
+  box-shadow: var(--sombra-suave);
+}
+.contador-texto { margin: 0 0 0.5rem; font-size: 1.15rem; color: var(--texto); }
+.contador-numero { display: inline-block; min-width: 2ch; font-size: 1.6rem; font-weight: 800; color: var(--morado-oscuro); }
+.contador-detalle { margin: 0; font-size: 0.95rem; color: var(--texto-suave); }
+
+.oculto-panel {
+  opacity: 0; visibility: hidden; max-height: 0;
+  padding-top: 0; padding-bottom: 0; border-color: transparent;
+  box-shadow: none; overflow: hidden;
+  transition: opacity 0.3s ease, max-height 0.3s ease, padding 0.3s ease, visibility 0s linear 0.3s;
+}
+.visible-panel {
+  opacity: 1; visibility: visible; max-height: 260px;
+  animation: pop 0.35s ease;
+  transition: opacity 0.3s ease, max-height 0.3s ease, padding 0.3s ease, visibility 0s;
+}
+
+
+/* =========================================================
+   11. PIE DE PÁGINA
+   ========================================================= */
+
+.pie {
+  color: var(--blanco);
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  margin-top: 2rem;
+  background: linear-gradient(135deg, #1a0c3a, #0d0522);
+}
+.pie h2 { margin: 0 0 1rem; color: #f5f3ff; font-size: 2rem; }
+.pie p { max-width: 700px; margin: 0 auto; color: #c7d2fe; }
+.contacto { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.9rem; margin: 1.75rem 0 1.5rem; }
+/* Enlaces y botones del footer: Email y Formulario idénticos.
+   appearance:none quita el fondo blanco por defecto del <button>. */
+.contacto a,
+.contacto .email-boton,
+.contacto .form-boton {
+  appearance: none;
+  -webkit-appearance: none;
+  display: inline-block;
+  padding: 0.7rem 1.2rem;
+  border-radius: var(--radio-boton);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  font-family: var(--fuente-cuerpo);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+.contacto a:hover,
+.contacto .email-boton:hover,
+.contacto .form-boton:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: var(--morado);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+.anio { margin-top: 1rem; font-size: 0.9rem; color: #a5b4fc; }
+
+/* =========================================================
+   12· BOTÓN DE EMAIL (mismo estilo que los enlaces)
+   ========================================================= */
+
+.email-boton {
+  display: inline-block;
+  padding: 0.7rem 1.2rem;
+  border-radius: var(--radio-boton);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.25s ease, border-color 0.25s ease;
+}
+.email-boton:hover {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: var(--morado);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* =========================================================
+   13. TOAST (aviso flotante con el correo)
+   ========================================================= */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 2rem;
+  transform: translateX(-50%) translateY(20px);
+  max-width: min(92vw, 520px);
+  padding: 0.9rem 1.4rem;
+  border-radius: var(--radio-boton);
+  background: var(--superficie-2);
+  border: 1px solid var(--morado);
+  color: var(--texto);
+  font-weight: 600;
+  text-align: center;
+  box-shadow: var(--sombra-media);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s;
+  z-index: 10000;
+}
+
+/* Estado visible (lo añade el JS) */
+.toast.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+
+/* =========================================================
+   12. BOTÓN "VOLVER ARRIBA"
+   ========================================================= */
+
+.subir {
+  position: fixed; right: 1.25rem; bottom: 1.25rem;
+  width: 48px; height: 48px; border: none; border-radius: 50%;
+  background: var(--grad-marca); color: #0d0522;
+  font-size: 1.3rem; font-weight: 800; cursor: pointer;
+  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.45);
+  opacity: 0; visibility: hidden; transform: translateY(20px) scale(0.8);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+  z-index: 50;
+}
+.subir.visible { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+.subir:hover { transform: translateY(-4px) scale(1.08); }
+
+
+/* =========================================================
+   13. ANIMACIÓN DE APARICIÓN (usada por JS)
+   ========================================================= */
+
+.oculto { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.visible { opacity: 1; transform: translateY(0); }
+
+
+/* =========================================================
+   14. TRANSICIÓN SUAVE AL CAMBIAR DE TEMA
+   ========================================================= */
+
+body, .seccion, .lista article, .tarjeta, .panel-contador, .boton-contador, .barra, .hero-ficha {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+
+/* =========================================================
+   15. RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-ficha { max-width: 380px; }
+}
+
+@media (max-width: 640px) {
+  .gustos { grid-template-columns: 1fr; }
+  .nav { display: none; }            /* oculta menú en móvil (puedes añadir hamburguesa luego) */
+  .marca-texto { display: none; }
+  .seccion h2 { font-size: 1.6rem; }
+  .tarjeta, .lista article { padding: 1.25rem; }
+  .boton { width: 100%; text-align: center; }
+  .hero-acciones { flex-direction: column; }
+}
+
+
+/* =========================================================
+   16. ACCESIBILIDAD: RESPETAR "MENOS MOVIMIENTO"
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .oculto { opacity: 1; transform: none; }
+  .hero h1 .palabra { opacity: 1; animation: none; }
+  .seccion h2::after { transform: scaleX(1); }
+  .estela { display: none; }
+}
+
+/* =========================================================
+   17. MODAL DEL FORMULARIO DE GITHUB
+   ========================================================= */
+
+/* Fondo oscuro con desenfoque */
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(5, 2, 15, 0.72);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.modal-fondo.abierto { opacity: 1; }
+.modal-fondo[hidden] { display: none; }
+
+/* Tarjeta del modal */
+.modal {
+  width: min(520px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-suave);
+  padding: 2rem;
+  box-shadow: var(--sombra-media);
+  transform: translateY(16px) scale(0.97);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.modal-fondo.abierto .modal { transform: translateY(0) scale(1); }
+
+/* Botón cerrar (×) */
+.modal-cerrar {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--borde);
+  border-radius: 50%;
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+.modal-cerrar:hover { border-color: var(--morado); transform: rotate(90deg); }
+
+.modal h3 {
+  margin: 0 0 0.4rem;
+  font-family: var(--fuente-titulo);
+  color: var(--morado-oscuro);
+  font-size: 1.4rem;
+}
+.modal-texto { margin: 0 0 1.4rem; font-size: 0.95rem; color: var(--texto-suave); }
+
+/* Campos del formulario */
+.campo { margin-bottom: 1.1rem; }
+.campo label,
+.campo-etiqueta {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  color: var(--texto);
+}
+
+.campo input[type="text"],
+.campo textarea,
+.campo select {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--borde);
+  border-radius: 12px;
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-family: inherit;
+  font-size: 1rem;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+.campo textarea { resize: vertical; }
+.campo input:focus,
+.campo textarea:focus,
+.campo select:focus {
+  outline: none;
+  border-color: var(--morado);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
+}
+
+/* Selector Issue / Pull Request (píldoras) */
+.pills { display: flex; gap: 0.5rem; }
+.pills label {
+  flex: 1;
+  margin: 0;
+  text-align: center;
+  padding: 0.6rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-boton);
+  color: var(--texto-suave);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+.pills input { position: absolute; opacity: 0; pointer-events: none; }
+.pills label.activa {
+  background: var(--grad-marca);
+  border-color: transparent;
+  color: #0d0522;
+}
+
+/* Botón de enviar a ancho completo */
+.modal-enviar {
+  width: 100%;
+  margin-top: 0.5rem;
+  font-family: inherit;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+}
+
+/* Ajustes en modo claro */
+html[data-tema="claro"] .modal-fondo { background: rgba(30, 20, 60, 0.45); }
+html[data-tema="claro"] .modal-enviar,
+html[data-tema="claro"] .pills label.activa { color: #ffffff; }
+
+/* =========================================================
+   19. ✔ PIE (Contacto) CLAR EN MODO CLARO + transición suave
+   En modo oscuro el footer se queda como está (fondo oscuro).
+   En modo claro se vuelve clarito, con texto y botones oscuros.
+   ========================================================= */
+
+/* Transición suave del footer al cambiar de tema (en ambos sentidos) */
+.pie, .pie h2, .pie p, .anio,
+.contacto a, .contacto .email-boton, .contacto .form-boton {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Fondo del footer en modo claro (lila muy suave) */
+html[data-tema="claro"] .pie {
+  background: linear-gradient(135deg, #efe9ff, #f5f2ff);
+  color: #241a3d;
+}
+html[data-tema="claro"] .pie h2 { color: #241a3d; }
+html[data-tema="claro"] .pie p  { color: #5b5078; }
+html[data-tema="claro"] .anio   { color: #6b5b95; }
+
+/* Botones (Email / Formulario / LinkedIn) en modo claro: morado sobre fondo claro */
+html[data-tema="claro"] .contacto a,
+html[data-tema="claro"] .contacto .email-boton,
+html[data-tema="claro"] .contacto .form-boton {
+  color: #5b21b6;
+  background: rgba(139, 92, 246, 0.10);
+  border-color: rgba(139, 92, 246, 0.28);
+}
+html[data-tema="claro"] .contacto a:hover,
+html[data-tema="claro"] .contacto .email-boton:hover,
+html[data-tema="claro"] .contacto .form-boton:hover {
+  color: #5b21b6;
+  background: rgba(139, 92, 246, 0.18);
+  border-color: var(--morado);
+}
+
+/* =========================================================
+   20. SUDOKU (modo difícil) — colores más suaves y cajas 3x3 claras
+   ========================================================= */
+
+/* Variables propias del sudoku (oscuro por defecto) */
+:root {
+  --sudoku-celda: #1b2444;        /* fondo celda, más clarito */
+  --sudoku-celda-alt: #242e58;    /* caja alternada, un punto más clara */
+  --sudoku-linea: rgba(167,139,250,0.14);   /* línea fina entre celdas */
+  --sudoku-linea-caja: rgba(167,139,250,0.55); /* divisor de cajas 3x3 */
+  --sudoku-dado: #ffffff;         /* números dados */
+  --sudoku-user: #93c5fd;         /* números que colocas */
+}
+html[data-tema="claro"] {
+  --sudoku-celda: #ffffff;
+  --sudoku-celda-alt: #ece4ff;    /* caja alternada lila suave */
+  --sudoku-linea: rgba(91,33,182,0.12);
+  --sudoku-linea-caja: rgba(91,33,182,0.6); /* más oscura => más contraste */
+  --sudoku-dado: #241a3d;
+  --sudoku-user: #5b21b6;
+}
+
+.sudoku-info { color: var(--texto-suave); max-width: 60ch; }
+
+.sudoku-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.sudoku-vidas { font-weight: 700; color: var(--texto); }
+.sudoku-vidas.perder { color: #ef4444; }
+
+.sudoku-reiniciar {
+  appearance: none; -webkit-appearance: none;
+  padding: 0.5rem 1.1rem;
+  border-radius: var(--radio-boton);
+  border: 1px solid var(--borde);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-family: inherit; font-size: 0.95rem; font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+.sudoku-reiniciar:hover { border-color: var(--morado); transform: translateY(-2px); }
+
+.sudoku-wrap {
+  position: relative;
+  width: min(92vw, 460px);
+  margin: 0 auto;
+}
+
+/* Cuadrícula */
+.sudoku-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);   /* ✔ 9 filas iguales => celdas siempre cuadradas */
+  aspect-ratio: 1 / 1;
+  border: 2px solid var(--sudoku-linea-caja);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--sudoku-celda);
+  box-shadow: var(--sombra-suave);
+}
+
+.celda {
+  display: grid;
+  place-items: center;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: clamp(1rem, 4.2vw, 1.7rem);
+  color: var(--sudoku-user);
+  background: var(--sudoku-celda);
+  border: 1px solid var(--sudoku-linea);
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+/* Cajas 3x3 alternadas (la clase caja-alt la añade el JS) */
+.celda.caja-alt { background: var(--sudoku-celda-alt); }
+
+/* Números dados: solo cambian de color, mantienen el fondo de la caja */
+.celda.given { color: var(--sudoku-dado); cursor: default; }
+.celda.filled { color: var(--sudoku-user); }
+
+/* Divisores gruesos de las cajas 3x3 */
+.celda.b-d { border-right: 2px solid var(--sudoku-linea-caja); }
+.celda.b-b { border-bottom: 2px solid var(--sudoku-linea-caja); }
+
+/* Celda seleccionada y error */
+/* Cruz al seleccionar: fila (morado) + columna (azul) + casilla (más fuerte) */
+.celda.fila-sel { background: rgba(139, 92, 246, 0.16) !important; }
+.celda.col-sel  { background: rgba(96, 165, 250, 0.16) !important; }
+.celda.sel      { background: rgba(167, 139, 250, 0.34) !important; }
+.celda.error { color: #fff !important; background: #ef4444 !important; animation: shake 0.35s; }
+
+/* Paleta */
+.sudoku-palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-top: 1.25rem;
+}
+.pal-btn {
+  position: relative;
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--borde);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-family: var(--fuente-titulo);
+  font-weight: 700; font-size: 1.2rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.3s ease;
+}
+.pal-btn:hover { border-color: var(--morado); transform: translateY(-2px); }
+.pal-btn .pal-count {
+  position: absolute;
+  top: -7px; right: -7px;
+  min-width: 16px; height: 16px;
+  font-size: 0.7rem;
+  border-radius: 999px;
+  background: var(--grad-marca);
+  color: #fff;
+  display: grid; place-items: center;
+  padding: 0 3px;
+}
+.pal-btn.agotado { opacity: 0; transform: scale(0.5); pointer-events: none; }
+
+.sudoku-borrar {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--borde);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+.sudoku-borrar:hover { border-color: var(--morado); }
+
+/* Overlay de fin / victoria */
+.sudoku-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  gap: 1rem;
+  text-align: center;
+  padding: 1rem;
+  background: rgba(13, 5, 34, 0.88);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 12px;
+  color: #fff;
+}
+.sudoku-overlay[hidden] { display: none; }
+.sudoku-overlay p { margin: 0; font-size: 1.2rem; font-weight: 700; }
+
+html[data-tema="claro"] .sudoku-overlay {
+  background: rgba(245, 242, 255, 0.92);
+  color: #241a3d;
+}
+
+/* =========================================================
+   21. PROYECTOS (API GitHub) — estado + componente reutilizable
+   ========================================================= */
+
+.proyectos-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+.proyectos-resumen { margin: 0; color: var(--texto-suave); font-weight: 600; }
+.proyectos-recargar {
+  appearance: none; -webkit-appearance: none;
+  padding: 0.5rem 1.1rem;
+  border-radius: var(--radio-boton);
+  border: 1px solid var(--borde);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-family: inherit; font-size: 0.95rem; font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.25s ease, transform 0.25s ease;
+}
+.proyectos-recargar:hover { border-color: var(--morado); transform: translateY(-2px); }
+
+.proyectos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+}
+
+/* Estado de carga: skeleton con shimmer (animación CON intención, no decorativa) */
+/* Contenedor de estado: siempre grid, se oculta SOLO con [hidden] */
+.proyectos-estado {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1.25rem;
+  color: var(--texto-suave);
+}
+.proyectos-estado[hidden] { display: none !important; } /* ← la clave */
+.proyectos-estado.error { color: #ef4444; }
+.proyectos-estado > p { grid-column: 1 / -1; margin: 0; } /* mensajes centrados a todo el ancho */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-suave);
+  padding: 1.5rem;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.10), transparent);
+  transform: translateX(-100%);
+  animation: shimmer 1.4s infinite;
+}
+.sk-line { height: 12px; border-radius: 6px; background: var(--borde); margin-bottom: 0.8rem; }
+.sk-line.titulo { width: 60%; height: 18px; }
+.sk-line.corta { width: 85%; }
+.sk-line.mini { width: 40%; }
+@keyframes shimmer { 100% { transform: translateX(100%); } }
+
+/* Tarjeta de repo (componente reutilizable) */
+.tarjeta-repo {
+  position: relative;
+  overflow: hidden;
+  transform-origin: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-suave);
+  padding: 1.5rem;
+  box-shadow: var(--sombra-suave);
+  transition:
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    background 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+.tarjeta-repo::before {
+  content: "";
+  position: absolute;
+  top: 0; left: -75%;
+  width: 50%; height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255,255,255,0.14), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+.tarjeta-repo:hover {
+  transform: translateY(-10px) scale(1.12) !important;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(59, 130, 246, 0.14)), var(--superficie);
+  border-color: var(--morado);
+  box-shadow: 0 22px 50px rgba(139, 92, 246, 0.35);
+  z-index: 2;
+}
+.tarjeta-repo:hover::before { left: 125%; }
+
+.repo-nombre {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--morado-oscuro);
+  transition: color 0.3s ease, letter-spacing 0.3s ease;
+}
+.tarjeta-repo:hover .repo-nombre {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--azul-oscuro);
+}
+.repo-desc { margin: 0; color: var(--texto-suave); font-size: 0.95rem; flex: 1; }
+.repo-meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; font-size: 0.85rem; color: var(--texto-suave); }
+.repo-lang { display: inline-flex; align-items: center; gap: 0.4rem; }
+.repo-lang i { width: 10px; height: 10px; border-radius: 50%; background: var(--morado); display: inline-block; }
+.repo-enlace { font-weight: 600; color: var(--azul-oscuro); }

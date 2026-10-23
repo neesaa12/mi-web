@@ -1,0 +1,281 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="es" data-tema="oscuro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Web personal de Vanesa Petrova Aygarova, estudiante de 1º DAM." />
+  <title>Vanesa Petrova Aygarova | Web personal</title>
+
+  <!-- Aplica el tema guardado ANTES de cargar el CSS (evita parpadeo).
+       Por defecto: modo oscuro. -->
+  <script>
+    (function () {
+      var tema = localStorage.getItem("tema");
+      if (tema !== "oscuro" && tema !== "claro") {
+        tema = "oscuro";
+      }
+      document.documentElement.setAttribute("data-tema", tema);
+    })();
+  </script>
+  <!-- Tipografías (Google Fonts, no es framework) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="script.js" defer></script>
+</head>
+<body>
+
+  <!-- Ráfaga de luz que sigue al cursor (canvas, fondo sólido detrás) -->
+  <canvas id="estela" class="estela" aria-hidden="true"></canvas>
+
+  <!-- =====================================================
+       CABECERA: barra de navegación fija + hero reestructurado
+       ===================================================== -->
+  <header class="cabecera">
+
+    <!-- Barra superior fija (marca + menú + botón de tema) -->
+    <div class="barra">
+      <!-- Marca / identidad -->
+      <a class="marca" href="#inicio" aria-label="Inicio">
+        <span class="marca-logo">VP</span>
+        <span class="marca-texto">Vanesa Aygarova</span>
+      </a>
+
+      <!-- Menú de navegación -->
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="#sobre-mi">Sobre mí</a>
+        <a href="#hecho">Lo que he hecho</a>
+        <a href="#gustos">Me gusta</a>
+        <a href="#contacto">Contacto</a>
+        <a href="#proyectos">Proyectos</a>
+        <a href="#sudoku">Sudoku</a>
+      </nav>
+
+      <!-- Botón de modo oscuro/claro -->
+      <button
+        type="button"
+        class="modo-oscuro-boton"
+        id="modo-oscuro"
+        aria-pressed="true"
+      >
+        Modo claro
+      </button>
+    </div>
+
+    <!-- Hero: texto a la izquierda + ficha-resumen a la derecha -->
+    <div class="hero">
+      <div class="hero-texto">
+        <span class="etiqueta">1º DAM · IES Simarro</span>
+        <h1 id="titulo">Vanesa Petrova Aygarova</h1>
+        <p class="frase">
+          Estudiante de 1º DAM. Me interesa descubrir el trabajo que hay detrás
+          de las aplicaciones y páginas web.
+        </p>
+        <div class="hero-acciones">
+          <a class="boton" href="#contacto">Hablemos</a>
+          <a class="boton boton-secundario" href="#sobre-mi">Sobre mí</a>
+        </div>
+      </div>
+
+      <!-- Ficha-resumen (claridad visual de un vistazo) -->
+      <aside class="hero-ficha" aria-label="Resumen">
+        <div class="ficha-avatar">VP</div>
+        <p class="ficha-nombre">Vanesa Petrova Aygarova</p>
+        <dl class="ficha-datos">
+          <div><dt>Ciclo</dt><dd>1º DAM</dd></div>
+          <div><dt>Centro</dt><dd>IES Simarro</dd></div>
+          <div><dt>Objetivo</dt><dd>Programadora</dd></div>
+        </dl>
+      </aside>
+    </div>
+  </header>
+
+  <!-- Contenido principal -->
+  <main>
+    <!-- Sección Sobre mí -->
+    <section class="seccion" id="sobre-mi">
+      <h2>Sobre mí</h2>
+      <p>
+        Soy Vanesa Petrova Aygarova, estudiante del ciclo de <strong>1º DAM</strong> en el <strong>IES Simarro</strong>.
+        Me gusta la música, ver series y películas, la informática y la montaña. También disfruto viajando y aprendiendo cosas nuevas.
+      </p>
+      <p>
+        Mi objetivo es ser programadora y seguir desarrollando mis conocimientos en desarrollo de aplicaciones,
+        páginas web y tecnología.
+      </p>
+    </section>
+
+    <!-- Sección Lo que he hecho -->
+    <section class="seccion" id="hecho">
+      <h2>Lo que he hecho</h2>
+
+      <!-- Contador de cosas que he hecho -->
+      <button
+        type="button"
+        class="boton-contador"
+        id="boton-contador"
+        aria-expanded="false"
+        aria-controls="panel-contador"
+      >
+        Ver contador de cosas que he hecho
+      </button>
+
+      <!-- Panel que se despliega al hacer clic -->
+      <div
+        class="panel-contador oculto-panel"
+        id="panel-contador"
+        role="region"
+        aria-live="polite"
+      >
+        <p class="contador-texto">
+          He hecho
+          <span class="contador-numero" id="contador-numero">0</span>
+          cosas destacadas en esta web.
+        </p>
+        <p class="contador-detalle">
+          Contando las tarjetas de la sección “Lo que he hecho”.
+        </p>
+      </div>
+
+      <ul class="lista">
+        <li>
+          <article>
+            <h3>Bachillerato tecnológico</h3>
+            <p>
+              He cursado el bachillerato tecnológico, un camino relacionado con la ciencia,
+              la tecnología y el aprendizaje lógico.
+            </p>
+          </article>
+        </li>
+        <li>
+          <article>
+            <h3>Viajar</h3>
+            <p>
+              Me gusta viajar, conocer nuevos lugares y descubrir culturas, personas y experiencias diferentes.
+            </p>
+          </article>
+        </li>
+        <li>
+          <article>
+            <h3>1º DAM</h3>
+            <p>
+              Actualmente estudio el ciclo de 1º DAM en el IES Simarro, donde estoy aprendiendo
+              programación y desarrollo de aplicaciones.
+            </p>
+          </article>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Sección Me gusta -->
+    <section class="seccion" id="gustos">
+      <h2>Me gusta</h2>
+      <div class="gustos">
+        <article class="tarjeta" data-emoji="🎵">   <!-- Música -->
+          <h3>Música</h3>
+          <p>La música forma parte de mi día a día y me ayuda a concentrarme, relajarme y disfrutar.</p>
+        </article>
+        <article class="tarjeta" data-emoji="🎬">   <!-- Series y películas -->
+          <h3>Series y películas</h3>
+          <p>Me gusta ver series y películas para desconectar, aprender y disfrutar de buenas historias.</p>
+        </article>
+        <article class="tarjeta" data-emoji="💻">   <!-- Informática -->
+          <h3>Informática</h3>
+          <p>La informática me llama la atención, especialmente el trabajo que hay detrás de aplicaciones y páginas web.</p>
+        </article>
+        <article class="tarjeta" data-emoji="⛰️">   <!-- Montaña -->
+          <h3>Montaña</h3>
+          <p>Disfruto de la montaña, el aire libre y las experiencias relacionadas con la naturaleza.</p>
+        </article>
+      </div>
+    </section>
+        <!-- Sección Proyectos (API GitHub) -->
+    <section class="seccion" id="proyectos">
+      <h2>Proyectos</h2>
+      <div class="proyectos-top">
+        <p class="proyectos-resumen" id="proyectos-resumen">Cargando métricas de GitHub…</p>
+        <button type="button" class="proyectos-recargar" id="proyectos-recargar">↻ Recargar</button>
+      </div>
+      <div class="proyectos-estado" id="proyectos-estado" hidden></div>
+      <div class="proyectos-grid" id="proyectos-grid" aria-live="polite"></div>
+    </section>
+        <!-- Sección Sudoku -->
+    <section class="seccion" id="sudoku">
+      <h2>Sudoku · modo difícil</h2>
+      <p class="sudoku-info">
+        Tienes <strong>3 fallos</strong> como máximo. Coloca los números y la paleta de abajo se irá
+        vaciando: cuando un número desaparece, es que ya lo has usado todas sus veces.
+      </p>
+      <div class="sudoku-top">
+        <div class="sudoku-vidas" id="sudoku-vidas">Fallos: <span id="sudoku-fallos">0</span> / 3</div>
+        <button type="button" class="sudoku-reiniciar" id="sudoku-reiniciar">↻ Reiniciar</button>
+      </div>
+      <div class="sudoku-wrap">
+        <div class="sudoku-grid" id="sudoku-grid"></div>
+        <div class="sudoku-palette" id="sudoku-palette"></div>
+        <div class="sudoku-overlay" id="sudoku-overlay" hidden>
+          <p id="sudoku-mensaje"></p>
+          <button type="button" class="boton" id="sudoku-otra">Jugar otra vez</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Pie de página -->
+  <footer class="pie" id="contacto">
+    <h2>Contacto</h2>
+    <p>Si quieres ponerte en contacto conmigo, puedes escribirme.</p>
+
+    <ul class="contacto">
+      <li><button type="button" class="email-boton" id="email-boton">Email</button></li>
+      <li><a href="https://github.com/neesaa12" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      <li><button type="button" class="form-boton" id="form-boton">Formulario</button></li>
+    </ul>
+
+    <p class="anio">© <span id="anio"></span> Vanesa Petrova Aygarova</p>
+  </footer>
+
+  <!-- Botón flotante para volver arriba -->
+  <button type="button" class="subir" id="subir" aria-label="Volver arriba">↑</button>
+
+  <!-- Aviso flotante: muestra el correo al pulsar Email -->
+   <!-- Formulario que abre un issue/PR etiquetado en GitHub -->
+<div class="modal-fondo" id="modal-fondo" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+    <button type="button" class="modal-cerrar" id="modal-cerrar" aria-label="Cerrar formulario">×</button>
+    <h3 id="modal-titulo">Nuevo en GitHub</h3>
+    <p class="modal-texto">Rellena y se abrirá un issue o PR etiquetado en mi repositorio.</p>
+    <form id="form-github">
+      <div class="campo">
+        <span class="campo-etiqueta">Tipo</span>
+        <div class="pills">
+          <label class="activa"><input type="radio" name="tipo" value="issue" checked /> Issue</label>
+          <label><input type="radio" name="tipo" value="pr" /> Pull Request</label>
+        </div>
+      </div>
+      <div class="campo">
+        <label for="campo-titulo">Título *</label>
+        <input id="campo-titulo" name="titulo" type="text" required placeholder="Ej: Mejorar contraste del hero" />
+      </div>
+      <div class="campo">
+        <label for="campo-descripcion">Descripción</label>
+        <textarea id="campo-descripcion" name="descripcion" rows="4" placeholder="Detalla qué quieres cambiar..."></textarea>
+      </div>
+      <div class="campo">
+        <label for="campo-etiqueta">Etiqueta *</label>
+        <select id="campo-etiqueta" name="etiqueta" required>
+          <option value="bug">Bug</option>
+          <option value="mejora">Mejora</option>
+          <option value="diseño">Diseño</option>
+          <option value="contenido">Contenido</option>
+        </select>
+      </div>
+      <button type="submit" class="boton modal-enviar">Abrir en GitHub ↗</button>
+    </form>
+  </div>
+</div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
