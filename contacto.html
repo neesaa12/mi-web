@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="oscuro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Contacta con Vanesa Petrova Aygarova." />
+  <title>Contacto | Vanesa Petrova Aygarova</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23a78bfa'/><text x='50' y='68' font-family='sans-serif' font-size='50' font-weight='800' fill='%23ffffff' text-anchor='middle'>VP</text></svg>">
+  <script>
+    (function () {
+      var tema = localStorage.getItem("tema") || "oscuro";
+      document.documentElement.setAttribute("data-tema", tema);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <canvas id="estela" class="estela" aria-hidden="true"></canvas>
+
+  <header class="cabecera">
+    <div class="barra">
+      <a class="marca" href="index.html" aria-label="Inicio">
+        <span class="marca-logo">VP</span>
+        <span class="marca-texto">Vanesa Aygarova</span>
+      </a>
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="index.html">Inicio</a>
+        <a href="sobre-mi.html">Sobre mí</a>
+        <a href="proyectos.html">Proyectos</a>
+        <a href="contacto.html" class="activo">Contacto</a>
+      </nav>
+      <button type="button" class="modo-oscuro-boton" id="modo-oscuro" aria-pressed="true">Modo claro</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="seccion" id="contacto-principal">
+      <h2>Hablemos</h2>
+      <p>Si quieres ponerte en contacto conmigo, puedes escribirme un correo, abrir un issue en mi repositorio o visitarme en GitHub.</p>
+      <ul class="contacto contacto-grande">
+        <li><button type="button" class="email-boton" id="email-boton">✉️ Copiar mi email</button></li>
+        <li><a href="https://github.com/neesaa12" target="_blank" rel="noopener noreferrer">💻 GitHub</a></li>
+        <li><button type="button" class="form-boton" id="form-boton">📝 Abrir issue/PR</button></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <h2>Contacto</h2>
+    <p>Si quieres ponerte en contacto conmigo, puedes escribirme.</p>
+    <ul class="contacto">
+      <li><button type="button" class="email-boton" id="email-boton">Email</button></li>
+      <li><a href="https://github.com/neesaa12" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      <li><button type="button" class="form-boton" id="form-boton">Formulario</button></li>
+    </ul>
+    <p class="anio">© <span id="anio"></span> Vanesa Petrova Aygarova</p>
+  </footer>
+
+  <button type="button" class="subir" id="subir" aria-label="Volver arriba">↑</button>
+
+  <!-- MODAL FORMULARIO -->
+  <div class="modal-fondo" id="modal-fondo" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+      <button type="button" class="modal-cerrar" id="modal-cerrar" aria-label="Cerrar">×</button>
+      <h3 id="modal-titulo">Nuevo en GitHub</h3>
+      <p class="modal-texto">Rellena y se abrirá un issue o PR etiquetado en mi repositorio.</p>
+      <form id="form-github">
+        <div class="campo">
+          <span class="campo-etiqueta">Tipo</span>
+          <div class="pills">
+            <label class="activa"><input type="radio" name="tipo" value="issue" checked /> Issue</label>
+            <label><input type="radio" name="tipo" value="pr" /> Pull Request</label>
+          </div>
+        </div>
+        <div class="campo">
+          <label for="campo-titulo">Título *</label>
+          <input id="campo-titulo" name="titulo" type="text" required placeholder="Ej: Mejorar contraste" />
+        </div>
+        <div class="campo">
+          <label for="campo-descripcion">Descripción</label>
+          <textarea id="campo-descripcion" name="descripcion" rows="4" placeholder="Detalla qué quieres cambiar..."></textarea>
+        </div>
+        <div class="campo">
+          <label for="campo-etiqueta">Etiqueta *</label>
+          <select id="campo-etiqueta" name="etiqueta" required>
+            <option value="bug">Bug</option>
+            <option value="mejora">Mejora</option>
+            <option value="diseño">Diseño</option>
+            <option value="contenido">Contenido</option>
+          </select>
+        </div>
+        <button type="submit" class="boton modal-enviar">Abrir en GitHub ↗</button>
+      </form>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="oscuro">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Proyectos y repositorios de GitHub de Vanesa Petrova Aygarova." />
+  <title>Proyectos | Vanesa Petrova Aygarova</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23a78bfa'/><text x='50' y='68' font-family='sans-serif' font-size='50' font-weight='800' fill='%23ffffff' text-anchor='middle'>VP</text></svg>">
+  <script>
+    (function () {
+      var tema = localStorage.getItem("tema") || "oscuro";
+      document.documentElement.setAttribute("data-tema", tema);
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <canvas id="estela" class="estela" aria-hidden="true"></canvas>
+
+  <header class="cabecera">
+    <div class="barra">
+      <a class="marca" href="index.html" aria-label="Inicio">
+        <span class="marca-logo">VP</span>
+        <span class="marca-texto">Vanesa Aygarova</span>
+      </a>
+      <nav class="nav" aria-label="Navegación principal">
+        <a href="index.html">Inicio</a>
+        <a href="sobre-mi.html">Sobre mí</a>
+        <a href="proyectos.html" class="activo">Proyectos</a>
+        <a href="contacto.html">Contacto</a>
+      </nav>
+      <button type="button" class="modo-oscuro-boton" id="modo-oscuro" aria-pressed="true">Modo claro</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="seccion" id="proyectos">
+      <h2>Proyectos</h2>
+      <div class="proyectos-top">
+        <p class="proyectos-resumen" id="proyectos-resumen">Cargando métricas de GitHub…</p>
+        <button type="button" class="proyectos-recargar" id="proyectos-recargar">↻ Recargar</button>
+      </div>
+      <div class="proyectos-estado" id="proyectos-estado" hidden></div>
+      <div class="proyectos-grid" id="proyectos-grid" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <h2>Contacto</h2>
+    <p>Si quieres ponerte en contacto conmigo, puedes escribirme.</p>
+    <ul class="contacto">
+      <li><button type="button" class="email-boton" id="email-boton">Email</button></li>
+      <li><a href="https://github.com/neesaa12" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+      <li><button type="button" class="form-boton" id="form-boton">Formulario</button></li>
+    </ul>
+    <p class="anio">© <span id="anio"></span> Vanesa Petrova Aygarova</p>
+  </footer>
+
+  <button type="button" class="subir" id="subir" aria-label="Volver arriba">↑</button>
+</body>
+</html>

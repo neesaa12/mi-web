@@ -1244,3 +1244,196 @@ html[data-tema="claro"] .sudoku-overlay {
 .repo-lang { display: inline-flex; align-items: center; gap: 0.4rem; }
 .repo-lang i { width: 10px; height: 10px; border-radius: 50%; background: var(--morado); display: inline-block; }
 .repo-enlace { font-weight: 600; color: var(--azul-oscuro); }
+
+/* =========================================================
+   22. TIMELINE "MI VIAJE" (historial camuflado)
+   ========================================================= */
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+  margin-top: 2rem;
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--grad-marca);
+  border-radius: 2px;
+}
+.timeline-item {
+  position: relative;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-suave);
+  box-shadow: var(--sombra-suave);
+  opacity: 0;
+  animation: aparecer 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.timeline-item:hover {
+  transform: translateX(6px);
+  border-color: var(--morado);
+}
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -2.35rem;
+  top: 1.7rem;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--grad-marca);
+  border: 3px solid var(--fondo);
+  box-shadow: 0 0 0 2px var(--morado);
+}
+.timeline-fecha {
+  display: inline-block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--morado-oscuro);
+  background: var(--superficie-2);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radio-boton);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.04em;
+}
+.timeline-contenido h3 {
+  margin: 0 0 0.4rem;
+  color: var(--texto);
+  font-family: var(--fuente-titulo);
+  font-size: 1.15rem;
+}
+.timeline-contenido p {
+  margin: 0;
+  color: var(--texto-suave);
+  font-size: 0.98rem;
+}
+
+/* =========================================================
+   23. "MI RINCÓN" (zona privada camuflada)
+   ========================================================= */
+.rincon-box {
+  margin-top: 1.5rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-suave);
+  padding: 2rem;
+  box-shadow: var(--sombra-suave);
+  transition: all 0.4s ease;
+}
+.rincon-bloqueado {
+  text-align: center;
+  padding: 1rem 0;
+}
+.rincon-candado {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+  filter: grayscale(0.3);
+}
+.rincon-bloqueado h3 {
+  margin: 0 0 0.6rem;
+  color: var(--texto);
+  font-family: var(--fuente-titulo);
+}
+.rincon-bloqueado p {
+  color: var(--texto-suave);
+  max-width: 500px;
+  margin: 0 auto 1.5rem;
+}
+.rincon-hint {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: var(--texto-suave);
+  font-style: italic;
+}
+
+/* Estado desbloqueado */
+.rincon-box.desbloqueado {
+  border-color: var(--morado);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.06), rgba(59, 130, 246, 0.04)), var(--superficie);
+}
+.rincon-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--borde);
+}
+.rincon-icono {
+  font-size: 1.8rem;
+}
+.rincon-header h3 {
+  margin: 0;
+  flex: 1;
+  color: var(--morado-oscuro);
+  font-family: var(--fuente-titulo);
+}
+.rincon-salir {
+  padding: 0.4rem 0.9rem;
+  border-radius: var(--radio-boton);
+  border: 1px solid var(--borde);
+  background: var(--superficie-2);
+  color: var(--texto);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.25s ease;
+}
+.rincon-salir:hover { border-color: var(--morado); }
+
+.rincon-notas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+.nota {
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: 16px;
+  padding: 1.25rem;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.nota:hover {
+  transform: translateY(-4px);
+  border-color: var(--morado);
+}
+.nota h4 {
+  margin: 0 0 0.75rem;
+  color: var(--texto);
+  font-family: var(--fuente-titulo);
+  font-size: 1.05rem;
+}
+.nota p {
+  margin: 0;
+  color: var(--texto-suave);
+  font-style: italic;
+  line-height: 1.6;
+}
+.nota ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  list-style: disc;
+  color: var(--texto-suave);
+}
+.nota ul li { margin-bottom: 0.3rem; }
+
+/* Contacto grande en la página de contacto */
+.contacto-grande {
+  justify-content: center;
+  gap: 1.2rem;
+  margin: 2.5rem 0;
+}
+.contacto-grande a,
+.contacto-grande .email-boton,
+.contacto-grande .form-boton {
+  padding: 1rem 1.8rem;
+  font-size: 1.05rem;
+}
